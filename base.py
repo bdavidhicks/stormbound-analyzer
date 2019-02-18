@@ -20,7 +20,7 @@ class Base:
             self.health = 18
         elif player_level == 19:
             self.health = 19
-        elif player_level == 19:
+        elif player_level == 20:
             self.health = 20
         else:
             print('Invalid player level of {level} given'.format(

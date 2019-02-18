@@ -37,7 +37,7 @@ class Card:
 class Spell(Card):
     def __init__(self, name, text, level, faction, cost, has_target,
                  valid_targets):
-        super(Summon, self).__init__(name, text, level, faction, cost)
+        super(Spell, self).__init__(name, text, level, faction, cost)
         self.has_target = has_target
         self.valid_targets = valid_targets
 
