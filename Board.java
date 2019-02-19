@@ -1,59 +1,21 @@
 package stormboundanalyzer;
 
-import java.util.*;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class Position {
-  int row, col;
-
-  public Position(int row, int col) {
-    this.row = row;
-    this.col = col;
-  }
-
-  public boolean equals(Position b) {
-    return this.row == b.row && this.col == b.col;
-  }
-  public int getRow() {return this.row;}
-  public int getCol() {return this.col;}
-  public int moveRow(int amount) {this.row += amount; return this.row;}
-  public int moveCol(int amount) {this.col += amount; return this.col;}
-}
-
-class Tile {
-  Player owner;
-  Summon summon;
-  Position position;
-
-  public Tile(Player owner, Summon summon, int row, int col) {
-    this.owner = owner;
-    this.summon = summon;
-    this.position = new Position(row, col);
-  }
-  public Player getOwner() {return this.owner;}
-  public Summon getSummon() {return this.summon;}
-  public Position getPosition() {return this.position;}
-
-  public String toString() {
-    if (this.owner.isOpponent()) {
-      return "V" + this.summon.toString();
-    } else {
-      return "^" + this.summon.toString();
-    }
-  }
-}
-
 public class Board {
 
   int rows, cols;
+  Game game;
   List<Tile> tiles;
 
-  public Board(int rows, int cols) throws Exception {
+  public Board(int rows, int cols, Game game) throws Exception {
     if (rows > 0 && cols > 0) {
       this.rows = rows;
       this.cols = cols;
+      this.game = game;
       this.tiles = new ArrayList<Tile>();
     } else {
       throw new Exception("Rows and cols must be greater than 0");
@@ -61,30 +23,60 @@ public class Board {
   }
   public int getRows() {return this.rows;}
   public int getCols() {return this.cols;}
-  public Tile getTileAt(int row, int col) {
+  public Tile getTileAt(Position position) {
     return this.tiles.stream()
-        .filter(tile -> new Position(row, col).equals(tile.getPosition()))
-        .findAny().orElse(null);
+      .filter(tile -> position.equals(tile.getPosition()))
+      .findAny().orElse(null);
   }
-  public boolean isTileEmptyAt(int row, int col) {
+  public boolean isTileEmptyAt(Position position) {
     return this.tiles.stream()
-        .map(Tile::getPosition)
-        .filter(pos -> pos.equals(new Position(row, col)))
-        .collect(Collectors.toList()).size() == 0;
+      .map(Tile::getPosition)
+      .filter(pos -> pos.equals(position))
+      .collect(Collectors.toList()).size() == 0;
   }
 
-    // def get_bordering_list(self, position):
-    //     result = []
-    //     if position.row + 1 < self.rows:
-    //         result.append(self.spaces[position.row + 1][position.col])
-    //     if position.col + 1 < self.cols:
-    //         result.append(self.spaces[position.row][position.col + 1])
-    //     if position.row - 1 >= 0:
-    //         result.append(self.spaces[position.row - 1][position.col])
-    //     if position.col - 1 >= 0:
-    //         result.append(self.spaces[position.row][position.col - 1])
-    //     return result
-    //
+  public void remove(Tile tile) {
+    this.tiles.remove(tile);
+  }
+
+  public Position getPositionInFront(Position position, Player player) {
+    if (player.isOpponent() && position.getRow() < this.rows - 1) {
+      return new Position(position.getRow() + 1, position.getCol());
+    } else if (!player.isOpponent() && position.getRow() > 0) {
+      return new Position(position.getRow() - 1, position.getCol());
+    }
+    return null;
+  }
+
+  public Position getPositionEast(Position position) {
+    if (position.getCol() < this.cols - 1) {
+      return new Position(position.getRow(), position.getCol() + 1);
+    }
+    return null;
+  }
+
+  public Position getPositionWest(Position position) {
+    if (position.getCol() > 0) {
+      return new Position(position.getRow(), position.getCol() - 1);
+    }
+    return null;
+  }
+
+  public List<Position> getBorderingList(Position position) {
+    Position north = new Position(position.getRow() - 1, position.getCol());
+    Position east = new Position(position.getRow(), position.getCol() + 1);
+    Position south = new Position(position.getRow() + 1, position.getCol());
+    Position west = new Position(position.getRow(), position.getCol() - 1);
+    List<Position> result = this.tiles.stream()
+      .filter(t ->
+        t.getPosition().equals(north) ||
+        t.getPosition().equals(east) ||
+        t.getPosition().equals(south) ||
+        t.getPosition().equals(west))
+      .map(t -> t.getPosition())
+      .collect(Collectors.toList());
+    return result;
+  }
     // def get_bordering_nesw(self, position):
     //     result = {
     //         'north': None,
@@ -114,12 +106,49 @@ public class Board {
     //                     result.append(self.spaces[new_row][new_col])
     //     return result
 
-    public boolean summon(Summon card, Player player, int row, int col) {
-      if (this.isTileEmptyAt(row, col)) { //&& player.is_behind_front_line(position):
-        this.tiles.add(new Tile(player, card, row, col));
-        return true;
+    public void startTurn(Player player) {
+      if (player.isOpponent()) {
+        for (int row = this.rows - 1; row >= 0; row--) {
+          for (int col = this.cols - 1; col >= 0; col--) {
+            Position position = new Position(row, col);
+            Summon summon = this.tiles.stream()
+              .filter(t -> t.getPosition().equals(position) && t.getSummon() instanceof Unit && t.getOwner() == player)
+              .map(t -> t.getSummon())
+              .findAny().orElse(null);
+            if (summon != null) {
+              Unit unit = (Unit)summon;
+              if (unit.isFrozen()) {
+                unit.unfreeze();
+              } else {
+                unit.attackOrMoveAhead(game, player, position);
+              }
+            }
+          }
+        }
       } else {
-        return false;
+        for (int row = 0; row < this.rows; row++) {
+          for (int col = 0; col < this.cols; col++) {
+            Position position = new Position(row, col);
+            Summon summon = this.tiles.stream()
+              .filter(t -> t.getPosition().equals(position) && t.getSummon() instanceof Unit && t.getOwner() == player)
+              .map(t -> t.getSummon())
+              .findAny().orElse(null);
+            if (summon != null) {
+              Unit unit = (Unit)summon;
+              if (unit.isFrozen()) {
+                unit.unfreeze();
+              } else {
+                unit.attackOrMoveAhead(game, player, position);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    public void summon(Summon card, Player player, Position position) {
+      if (this.isTileEmptyAt(position)) { //&& player.is_behind_front_line(position):
+        this.tiles.add(new Tile(player, card, position));
       }
     }
 
@@ -127,7 +156,8 @@ public class Board {
       StringBuilder result = new StringBuilder();
       for (int row = 0; row < this.rows; row++) {
         for (int col = 0; col < this.cols; col++) {
-          result.append((this.isTileEmptyAt(row, col)) ? "   " : this.getTileAt(row, col).toString());
+          Position position = new Position(row, col);
+          result.append((this.isTileEmptyAt(position)) ? "   " : this.getTileAt(position).toString());
           if (col < this.cols - 1) { result.append("|"); }
         }
         if (row < this.rows - 1) {

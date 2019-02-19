@@ -3,10 +3,6 @@ package stormboundanalyzer;
 public class Base{
   int health;
 
-  public int getHealth() {
-    return this.health;
-  }
-
   public Base(int playerLevel) throws Exception {
     if (playerLevel >= 1 && playerLevel <= 3) {
       this.health = 10;
@@ -35,4 +31,6 @@ public class Base{
       throw new Exception("Invalid player level");
     }
   }
+  public int getHealth() {return this.health;}
+  public void takeDamage(int damage) {this.health -= damage;}
 }

@@ -12,9 +12,9 @@ public class Summon extends Card {
     this.poisoned = false;
   }
 
-  public boolean canPlay(Board board, Player player, int row, int col) {
-    if (super.canPlay(board, player, row, col) &&
-        board.isTileEmptyAt(row, col) ) { //&&
+  public boolean canPlay(Game game, Player player, Position position) {
+    if (super.canPlay(game, player, position) &&
+        game.getBoard().isTileEmptyAt(position) ) { //&&
         //player.is_behind_front_line(position)) {
       return true;
     } else {
@@ -22,19 +22,21 @@ public class Summon extends Card {
     }
   }
 
-  public boolean play(Board board, Player player, int row, int col) {
-    if (this.canPlay(board, player, row, col)) {
-      super.play(board, player, row, col);
-      return board.summon(this, player, row, col);
-    } else {
-      return false;
+  public void play(Game game, Player player, Position position) {
+    if (this.canPlay(game, player, position)) {
+      super.play(game, player, position);
+      game.getBoard().summon(this, player, position);
     }
   }
 
   public boolean isFrozen() { return this.frozen; }
+  public void unfreeze() {this.frozen = false;}
   public boolean isAlive() { return this.currentStrength > 0; }
+  public int getCurrentStrength() { return this.currentStrength; }
   public boolean isPoisoned() { return this.poisoned; }
-  public void onTurnBegin(Board board, Player player, int row, int col) { }
-  public void onDeath(Board board, Player player, int row, int col) { }
+  public void takeDamage(int damage) { this.currentStrength -= damage; }
+  public void addStrength(int amount) { this.currentStrength += amount; }
+  public void onTurnBegin(Game game, Player player, Position position) { }
+  public void onDeath(Game game, Player player, Position position) { }
   public String toString() { return "" + this.currentStrength; }
 }

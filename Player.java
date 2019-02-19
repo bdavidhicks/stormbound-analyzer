@@ -24,14 +24,17 @@ public class Player {
   public boolean goesFirst() {return this.goesFirst;}
   public boolean isOpponent() {return this.isOpponent;}
   public Faction getFaction() {return this.faction;}
-  public String getname() {return this.name;}
+  public String getName() {return this.name;}
   public Base getBase() {return this.base;}
-  public int spendMana(int mana) {this.currentMana -= mana; return this.currentMana;}
+  public void spendMana(int mana) {this.currentMana -= mana;}
+  public void addMana(int mana) {this.currentMana += mana;}
+  public void fillMana(int mana) {this.currentMana = mana;}
   public String toString() {
-    return String.format("%s - %s with %d health base", // with line at {front_line}'.format(
+    return String.format("%s - %s with %d health base and %d mana currently", // with line at {front_line}'.format(
       this.name,
       this.faction.getName(),
-      this.base.getHealth()
+      this.base.getHealth(),
+      this.getCurrentMana()
       //this.front_line
     );
   }
