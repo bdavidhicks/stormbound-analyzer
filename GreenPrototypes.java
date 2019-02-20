@@ -22,6 +22,10 @@ class GreenPrototypes extends Construct {
     );
   }
 
+  public GreenPrototypes copyCard() throws Exception {
+    return new GreenPrototypes(this.getLevel());
+  }
+
   public void onDeath(Game game, Player player, Position position) {
     // give a random boarding ENEMY unit strength equal to level
     Board board = game.getBoard();

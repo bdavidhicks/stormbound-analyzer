@@ -154,7 +154,13 @@ public class Board {
 
     public String toString() {
       StringBuilder result = new StringBuilder();
+      result.append("  ");
+      for (int col = 0; col < this.cols; col++) {
+        result.append(String.format(" %s  ", (char)('A' + col)));
+      }
+      result.append(String.format("%n"));
       for (int row = 0; row < this.rows; row++) {
+        result.append(String.format("%d ", row));
         for (int col = 0; col < this.cols; col++) {
           Position position = new Position(row, col);
           result.append((this.isTileEmptyAt(position)) ? "   " : this.getTileAt(position).toString());
@@ -162,6 +168,7 @@ public class Board {
         }
         if (row < this.rows - 1) {
           result.append(String.format("%n"));
+          result.append("  ");
           result.append(Stream.generate(() -> "-").limit(this.cols*4).collect(Collectors.joining("")));
           result.append(String.format("%n"));
         }

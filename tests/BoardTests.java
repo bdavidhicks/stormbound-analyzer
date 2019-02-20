@@ -3,6 +3,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import stormboundanalyzer.Board;
+import stormboundanalyzer.Game;
+import stormboundanalyzer.Faction;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,16 +13,44 @@ class BoardTests {
     @Test
     void board_create_valid() {
       assertDoesNotThrow(() -> {
-        Board b1 = new Board(5,4);
-        assertEquals(5, b1.getRows());
-        assertEquals(4, b1.getCols());
+        Game g = new Game(
+          5,
+          4,
+          Faction.WINTER_PACT,
+          10,
+          Faction.WINTER_PACT,
+          20,
+          true
+        );
+        assertEquals(5, g.getBoard().getRows());
+        assertEquals(4, g.getBoard().getCols());
       });
     }
 
     @Test
     void board_create_invalid() {
-      assertThrows(Exception.class, () -> { Board brow0 = new Board(0, 1); });
-      assertThrows(Exception.class, () -> { Board bcol0 = new Board(1, 0); });
+      assertThrows(Exception.class, () -> {
+        Game g = new Game(
+          0,
+          1,
+          Faction.WINTER_PACT,
+          10,
+          Faction.WINTER_PACT,
+          20,
+          true
+        );
+      });
+      assertThrows(Exception.class, () -> {
+        Game g = new Game(
+          1,
+          0,
+          Faction.WINTER_PACT,
+          10,
+          Faction.WINTER_PACT,
+          20,
+          true
+        );
+      });
     }
 
 }

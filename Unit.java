@@ -1,12 +1,20 @@
 package stormboundanalyzer;
 
-class Unit extends Summon {
+import java.util.Comparator;
+
+class Unit extends Summon implements Comparable<Card> {
   int movement;
 
   public Unit(String name, String text, int level, Faction faction, int cost, int strength, int movement) throws Exception {
     super(name, text, level, faction, cost, strength);
     this.movement = movement;
   }
+
+  public Unit copyCard() throws Exception {
+    return new Unit(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getCost(), this.getStartingStrength(), this.getMovement());
+  }
+
+  public int getMovement() {return this.movement;}
 
   public boolean canPlay(Game game, Player player, Position position) {
     return super.canPlay(game, player, position);
@@ -121,5 +129,28 @@ class Unit extends Summon {
       // print('att_sp.card = {}'.format(att_sp.card))
       attacker.move(game, attackingPlayer, attackPosition, defendPosition);
     }
+  }
+
+  @Override
+  public int compareTo(Card c) {
+    if (c instanceof Unit) {
+      Unit u = (Unit)c;
+      return (this.getCost() - u.getCost() == 0) ?
+        (this.getName().compareTo(u.getName()) == 0) ?
+          (this.getStartingStrength() - u.getStartingStrength() == 0) ?
+            this.getMovement() - u.getMovement()
+            :
+            this.getStartingStrength() - u.getStartingStrength()
+          :
+          this.getName().compareTo(u.getName())
+        :
+        this.getCost() - u.getCost();
+    } else {
+      return super.compareTo(c);
+    }
+  }
+
+  public String toString() {
+    return String.format("(%2d) %-20s [%2d] move %d: %s", this.getCost(), this.getName(), this.getStartingStrength(), this.getMovement(), this.getText());
   }
 }

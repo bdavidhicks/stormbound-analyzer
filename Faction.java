@@ -13,6 +13,10 @@ public enum Faction {
     return this.name;
   }
 
+  public String toString() {
+    return this.name;
+  }
+
   Faction(String name) {
     this.name = name;
   }

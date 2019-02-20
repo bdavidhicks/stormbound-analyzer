@@ -1,15 +1,21 @@
 package stormboundanalyzer;
 
-public class Summon extends Card {
-  int strength, currentStrength;
+import java.util.Comparator;
+
+public class Summon extends Card implements Comparable<Card> {
+  int startingStrength, currentStrength;
   boolean poisoned, frozen;
 
-  public Summon(String name, String text, int level, Faction faction, int cost, int strength) throws Exception {
+  public Summon(String name, String text, int level, Faction faction, int cost, int startingStrength) throws Exception {
     super(name, text, level, faction, cost);
-    this.strength = strength;
-    this.currentStrength = strength;
+    this.startingStrength = startingStrength;
+    this.currentStrength = startingStrength;
     this.frozen = false;
     this.poisoned = false;
+  }
+
+  public Summon copyCard() throws Exception {
+    return new Summon(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getCost(), this.getStartingStrength());
   }
 
   public boolean canPlay(Game game, Player player, Position position) {
@@ -33,10 +39,30 @@ public class Summon extends Card {
   public void unfreeze() {this.frozen = false;}
   public boolean isAlive() { return this.currentStrength > 0; }
   public int getCurrentStrength() { return this.currentStrength; }
+  public int getStartingStrength() { return this.startingStrength; }
   public boolean isPoisoned() { return this.poisoned; }
   public void takeDamage(int damage) { this.currentStrength -= damage; }
   public void addStrength(int amount) { this.currentStrength += amount; }
   public void onTurnBegin(Game game, Player player, Position position) { }
   public void onDeath(Game game, Player player, Position position) { }
-  public String toString() { return "" + this.currentStrength; }
+
+  @Override
+  public int compareTo(Card c) {
+    if (c instanceof Summon) {
+      Summon s = (Summon)c;
+      return (this.getCost() - s.getCost() == 0) ?
+        (this.getName().compareTo(s.getName()) == 0) ?
+          this.getStartingStrength() - s.getStartingStrength()
+          :
+          this.getName().compareTo(s.getName())
+        :
+        this.getCost() - s.getCost();
+    } else {
+      return super.compareTo(c);
+    }
+  }
+
+  public String toString() {
+    return String.format("(%2d) %-20s [%2d]       : %s", this.getCost(), this.getName(), this.getStartingStrength(), this.getText());
+  }
 }

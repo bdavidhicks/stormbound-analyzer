@@ -1,6 +1,8 @@
 package stormboundanalyzer;
 
-public class Card {
+import java.util.Comparator;
+
+public class Card implements Comparable<Card> {
   String name, text;
   int level, cost;
   Faction faction;
@@ -17,6 +19,10 @@ public class Card {
       throw new Exception("Card cost must be greater than or equal to 0");
     }
     this.cost = cost;
+  }
+
+  public Card copyCard() throws Exception {
+    return new Card(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getCost());
   }
 
   public boolean canPlay(Game game, Player player, Position position) {
@@ -36,6 +42,18 @@ public class Card {
 
   public String getName() { return this.name; }
   public int getLevel() { return this.level; }
+  public String getText() { return this.text; }
+  public int getCost() { return this.cost; }
+  public Faction getFaction() { return this.faction; }
+
+  @Override
+  public int compareTo(Card c) {
+    return (this.getCost() - c.getCost() == 0) ? this.getName().compareTo(c.getName()) : this.getCost() - c.getCost();
+  }
+
+  public String toString() {
+    return String.format("(%2d) %-20s            : %s", this.getCost(), this.getName(), this.getText());
+  }
 }
 
 // class Spell(Card):

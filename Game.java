@@ -1,6 +1,6 @@
 package stormboundanalyzer;
 
-class Game {
+public class Game {
   Board board;
   Player bottomPlayer, topPlayer;
   boolean bottomPlayerGoesFirst;
@@ -22,6 +22,7 @@ class Game {
       !bottomPlayerGoesFirst
     );
     this.turnCounter = 1;
+    this.bottomPlayerGoesFirst = bottomPlayerGoesFirst;
   }
 
   public Board getBoard() {return this.board;}
@@ -32,13 +33,13 @@ class Game {
 
   public Player getActivePlayer() {
     if (this.bottomPlayerGoesFirst) {
-      if (this.turnCounter % 2 == 0) {
+      if (this.turnCounter % 2 == 1) {
         return this.bottomPlayer;
       } else {
         return this.topPlayer;
       }
     } else {
-      if (this.turnCounter % 2 == 0) {
+      if (this.turnCounter % 2 == 1) {
         return this.topPlayer;
       } else {
         return this.bottomPlayer;
@@ -47,15 +48,15 @@ class Game {
   }
 
   public void startTurn() {
-    System.out.println(String.format("Start Turn %d: %s is the Active Player", this.turnCounter, this.getActivePlayer().getName()));
     this.board.startTurn(this.getActivePlayer());
   }
 
   public void endTurn() {
-    // System.out.println(String.format("End Turn %d: %s is the Active Player", this.turnCounter, this.getActivePlayer().getName()));
     this.getActivePlayer().fillMana(this.turnCounter / 2 + 4);
     this.turnCounter += 1;
   }
+
+  public int getTurnCounter() {return turnCounter;}
 
   public Player getWinner() {
     return (this.topPlayer.getBase().getHealth() <= 0) ? bottomPlayer :
@@ -67,6 +68,10 @@ class Game {
   }
 
   public String toString() {
-    return this.topPlayer.toString() + String.format("%n") + this.board.toString() + String.format("%n") + this.bottomPlayer.toString() + String.format("%n");
+    return ((this.topPlayer == this.getActivePlayer()) ? "-> ": "   ") +
+      this.topPlayer.toString() + String.format("%n") +
+      this.board.toString() + String.format("%n") +
+      ((this.bottomPlayer == this.getActivePlayer()) ? "-> ": "   ") +
+      this.bottomPlayer.toString() + String.format("%n");
   }
 }

@@ -16,9 +16,9 @@ class Tile {
 
   public String toString() {
     if (this.owner.isOpponent()) {
-      return "v" + String.format("%-2s", this.summon.toString());
+      return "v" + String.format("%-2s", this.summon.getCurrentStrength());
     } else {
-      return "^" + String.format("%-2s", this.summon.toString());
+      return "^" + String.format("%-2s", this.summon.getCurrentStrength());
     }
   }
 }

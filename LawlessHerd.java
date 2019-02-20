@@ -16,4 +16,8 @@ class LawlessHerd extends Satyr {
       0
     );
   }
+
+  public LawlessHerd copyCard() throws Exception {
+    return new LawlessHerd(this.getLevel());
+  }
 }
