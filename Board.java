@@ -1,4 +1,4 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 import java.util.List;
 import java.util.ArrayList;

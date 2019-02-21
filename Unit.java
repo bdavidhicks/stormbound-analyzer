@@ -1,17 +1,17 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 import java.util.Comparator;
 
 class Unit extends Summon implements Comparable<Card> {
   int movement;
 
-  public Unit(String name, String text, int level, Faction faction, int cost, int strength, int movement) throws Exception {
-    super(name, text, level, faction, cost, strength);
+  public Unit(String name, String text, int level, Faction faction, Rarity rarity, int cost, int strength, int movement) throws Exception {
+    super(name, text, level, faction, rarity, cost, strength);
     this.movement = movement;
   }
 
   public Unit copyCard() throws Exception {
-    return new Unit(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getCost(), this.getStartingStrength(), this.getMovement());
+    return new Unit(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getRarity(), this.getCost(), this.getStartingStrength(), this.getMovement());
   }
 
   public int getMovement() {return this.movement;}

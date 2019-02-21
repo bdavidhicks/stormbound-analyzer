@@ -1,4 +1,4 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 import java.util.Comparator;
 
@@ -6,8 +6,9 @@ public class Card implements Comparable<Card> {
   String name, text;
   int level, cost;
   Faction faction;
+  Rarity rarity;
 
-  public Card(String name, String text, int level, Faction faction, int cost) throws Exception {
+  public Card(String name, String text, int level, Faction faction, Rarity rarity, int cost) throws Exception {
     this.name = name;
     this.text = text;
     if (level < 1 || level > 5) {
@@ -15,6 +16,7 @@ public class Card implements Comparable<Card> {
     }
     this.level = level;
     this.faction = faction;
+    this.rarity = rarity;
     if (cost < 0) {
       throw new Exception("Card cost must be greater than or equal to 0");
     }
@@ -22,7 +24,7 @@ public class Card implements Comparable<Card> {
   }
 
   public Card copyCard() throws Exception {
-    return new Card(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getCost());
+    return new Card(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getRarity(), this.getCost());
   }
 
   public boolean canPlay(Game game, Player player, Position position) {
@@ -45,6 +47,7 @@ public class Card implements Comparable<Card> {
   public String getText() { return this.text; }
   public int getCost() { return this.cost; }
   public Faction getFaction() { return this.faction; }
+  public Rarity getRarity() { return this.rarity; }
 
   @Override
   public int compareTo(Card c) {

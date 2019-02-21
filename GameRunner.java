@@ -1,5 +1,6 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
+import java.io.File;
 import java.util.Scanner;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -19,9 +20,26 @@ public class GameRunner {
     List<Faction> factions = Arrays.stream(Faction.values())
       .filter(f -> !f.equals(Faction.NEUTRAL))
       .collect(Collectors.toList());
+    List<Deck> decks = gr.loadDecks("decks/");
     Faction bottomPlayerFaction = gr.chooseFromList(gr.sc, "Pick your Faction using a number: ", factions);
+    Deck bottomPlayerDeck = null;
+    Deck topPlayerDeck = null;
+    if (decks.size() > 0) {
+      bottomPlayerDeck = gr.chooseFromList(gr.sc, "Pick your deck using a number: ",
+        decks.stream().filter(d -> {
+          List<Faction> deckFactions = d.getFactions();
+          return deckFactions.contains(bottomPlayerFaction) || (deckFactions.size() == 1 && deckFactions.contains(Faction.NEUTRAL));
+        }).collect(Collectors.toList()));
+    }
     int bottomPlayerLevel = gr.chooseFromRange(gr.sc, "Pick your base health: ", 10, 20);
     Faction topPlayerFaction = gr.chooseFromList(gr.sc, "Pick your opponent's Faction using a number: ", factions);
+    if (decks.size() > 0) {
+      topPlayerDeck = gr.chooseFromList(gr.sc, "Pick your opponent's deck using a number: ",
+        decks.stream().filter(d -> {
+          List<Faction> deckFactions = d.getFactions();
+          return deckFactions.contains(topPlayerFaction) || (deckFactions.size() == 1 && deckFactions.contains(Faction.NEUTRAL));
+        }).collect(Collectors.toList()));
+    }
     int topPlayerLevel = gr.chooseFromRange(gr.sc, "Pick your opponent's base health: ", 10, 20);
     boolean bottomPlayerGoesFirst = gr.answerYesNo(gr.sc, "Do you go first?: ");
     Game game = new Game(
@@ -33,6 +51,12 @@ public class GameRunner {
       topPlayerLevel,
       bottomPlayerGoesFirst
     );
+    if (bottomPlayerDeck != null) {
+      game.getBottomPlayer().setDeck(bottomPlayerDeck.getCards());
+    }
+    if (topPlayerDeck != null) {
+      game.getTopPlayer().setDeck(topPlayerDeck.getCards());
+    }
     System.out.println(game.toString());
     List<Card> cards = new ArrayList<Card>();
     for (int level = 1; level <= 5; level++) {
@@ -45,7 +69,7 @@ public class GameRunner {
       char action = gr.chooseAction(gr.sc);
       if (action == 'p') {
         Card cardToPlay = gr.chooseFromList(gr.sc, "Pick a card to play: ", cards);
-        Position locationToPlay = gr.chooseLocation(gr.sc, "Pick a location to play: a1 a2 ... d4 ");
+        Position locationToPlay = gr.chooseLocation(gr.sc, "Pick a location to play: a0 a1 ... d4 ");
         gr.playCard(game, game.getActivePlayer(), locationToPlay, cardToPlay.copyCard());
       } else if (action == 'd') {
         Card cardToDiscard = gr.chooseFromList(gr.sc, "Pick a card to discard: ", cards);
@@ -144,4 +168,21 @@ public class GameRunner {
     return choice.charAt(0);
   }
 
+  public List<Deck> loadDecks(String path) {
+    List<Deck> decks = new ArrayList<Deck>();
+    final File folder = new File(path);
+    for (final File fileEntry : folder.listFiles()) {
+      if (!fileEntry.isDirectory()) {
+        if(fileEntry.getName().contains(".csv")) {
+          try {
+            decks.add(new Deck(fileEntry));
+          } catch (Exception ex) {
+            System.out.println(ex.toString());
+            System.out.println("Skipping deck...");
+          }
+        }
+      }
+    }
+    return decks;
+  }
 }

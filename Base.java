@@ -1,4 +1,4 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 public class Base{
   int health;

@@ -1,18 +1,19 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 class LawlessHerd extends Satyr {
-  private LawlessHerd(String name, String text, int level, Faction faction, int cost, int strength, int movement) throws Exception {
-    super(name, text, level, faction, cost, strength, movement);
+  private LawlessHerd(String name, String text, int level, Faction faction, Rarity rarity, int cost, int strength, int movement) throws Exception {
+    super(name, text, level, faction, rarity, cost, strength, movement);
   }
 
-  public LawlessHerd(int level) throws Exception {
+  public LawlessHerd(Integer level) throws Exception {
     super(
       "Lawless Herd",
       "",
-      level,
+      level.intValue(),
       Faction.NEUTRAL,
+      Rarity.COMMON,
       2,
-      1 + level,
+      1 + level.intValue(),
       0
     );
   }

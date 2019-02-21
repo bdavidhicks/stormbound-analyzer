@@ -1,4 +1,4 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 class Tile {
   Player owner;

@@ -1,4 +1,4 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 public enum Faction {
   IRONCLAD_UNION("Ironclad Union"),

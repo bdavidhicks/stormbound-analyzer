@@ -1,4 +1,4 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 import java.util.Random;
 import java.util.List;
@@ -6,18 +6,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class GreenPrototypes extends Construct {
-  private GreenPrototypes(String name, String text, int level, Faction faction, int cost, int strength, int movement) throws Exception {
-    super(name, text, level, faction, cost, strength, movement);
+  private GreenPrototypes(String name, String text, int level, Faction faction, Rarity rarity, int cost, int strength, int movement) throws Exception {
+    super(name, text, level, faction, rarity, cost, strength, movement);
   }
 
-  public GreenPrototypes(int level) throws Exception {
+  public GreenPrototypes(Integer level) throws Exception {
     super(
       "Green Prototypes",
       String.format("On death, give %d strength to a random bordering ENEMY unit", level),
-      level,
+      level.intValue(),
       Faction.NEUTRAL,
+      Rarity.RARE,
       1,
-      level,
+      level.intValue(),
       1
     );
   }

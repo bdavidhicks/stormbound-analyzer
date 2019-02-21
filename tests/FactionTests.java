@@ -1,6 +1,6 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import stormboundanalyzer.Faction;
+import com.stormboundanalyzer.Faction;
 
 import org.junit.jupiter.api.Test;
 

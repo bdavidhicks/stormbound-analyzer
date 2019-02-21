@@ -1,4 +1,4 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 public class Game {
   Board board;
@@ -6,19 +6,19 @@ public class Game {
   boolean bottomPlayerGoesFirst;
   int turnCounter;
 
-  public Game(int boardHeight, int boardWidth, Faction bottomPlayerFaction, int bottomPlayerLevel,
-      Faction topPlayerFaction, int topPlayerLevel, boolean bottomPlayerGoesFirst) throws Exception {
+  public Game(int boardHeight, int boardWidth, Faction bottomPlayerFaction, int bottomPlayerBaseLevel,
+      Faction topPlayerFaction, int topPlayerBaseLevel, boolean bottomPlayerGoesFirst) throws Exception {
     this.board = new Board(boardHeight, boardWidth, this);
     this.bottomPlayer = new Player(
       bottomPlayerFaction,
       false,
-      bottomPlayerLevel,
+      bottomPlayerBaseLevel,
       bottomPlayerGoesFirst
     );
     this.topPlayer = new Player(
       topPlayerFaction,
       true,
-      topPlayerLevel,
+      topPlayerBaseLevel,
       !bottomPlayerGoesFirst
     );
     this.turnCounter = 1;

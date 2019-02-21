@@ -2,9 +2,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import stormboundanalyzer.Board;
-import stormboundanalyzer.Game;
-import stormboundanalyzer.Faction;
+import com.stormboundanalyzer.Board;
+import com.stormboundanalyzer.Game;
+import com.stormboundanalyzer.Faction;
 
 import org.junit.jupiter.api.Test;
 

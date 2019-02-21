@@ -1,4 +1,4 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
 
 import java.util.Comparator;
 
@@ -6,8 +6,8 @@ public class Summon extends Card implements Comparable<Card> {
   int startingStrength, currentStrength;
   boolean poisoned, frozen;
 
-  public Summon(String name, String text, int level, Faction faction, int cost, int startingStrength) throws Exception {
-    super(name, text, level, faction, cost);
+  public Summon(String name, String text, int level, Faction faction, Rarity rarity, int cost, int startingStrength) throws Exception {
+    super(name, text, level, faction, rarity, cost);
     this.startingStrength = startingStrength;
     this.currentStrength = startingStrength;
     this.frozen = false;
@@ -15,7 +15,7 @@ public class Summon extends Card implements Comparable<Card> {
   }
 
   public Summon copyCard() throws Exception {
-    return new Summon(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getCost(), this.getStartingStrength());
+    return new Summon(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getRarity(), this.getCost(), this.getStartingStrength());
   }
 
   public boolean canPlay(Game game, Player player, Position position) {

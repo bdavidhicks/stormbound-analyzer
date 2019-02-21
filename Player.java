@@ -1,4 +1,11 @@
-package stormboundanalyzer;
+package com.stormboundanalyzer;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Player {
   int currentMana, level;
@@ -6,6 +13,7 @@ public class Player {
   Faction faction;
   String name;
   Base base;
+  List<Card> hand, deck;
   public Player(Faction faction, boolean isOpponent, int level, boolean goesFirst) throws Exception {
     if (faction != Faction.NEUTRAL) {
       this.goesFirst = goesFirst;
@@ -15,9 +23,14 @@ public class Player {
       this.level = level;
       this.name = (isOpponent) ? "Opp" : "You";
       this.base = new Base(level);
+      this.hand = new ArrayList<Card>();
     } else {
       throw new Exception("Invalid Faction supplied to player constructor");
     }
+  }
+  public void setDeck(List<Card> deck) {
+    this.deck = deck;
+    this.hand = new ArrayList<Card>();
   }
   public int getCurrentMana() {return this.currentMana;}
   public int getLevel() {return this.level;}
