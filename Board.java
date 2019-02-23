@@ -63,116 +63,97 @@ public class Board {
   }
 
   public List<Position> getBorderingList(Position position) {
-    Position north = new Position(position.getRow() - 1, position.getCol());
-    Position east = new Position(position.getRow(), position.getCol() + 1);
-    Position south = new Position(position.getRow() + 1, position.getCol());
-    Position west = new Position(position.getRow(), position.getCol() - 1);
-    List<Position> result = this.tiles.stream()
-      .filter(t ->
-        t.getPosition().equals(north) ||
-        t.getPosition().equals(east) ||
-        t.getPosition().equals(south) ||
-        t.getPosition().equals(west))
-      .map(t -> t.getPosition())
-      .collect(Collectors.toList());
+    List<Position> result = new ArrayList<Position>();
+    if (position.getRow() - 1 >= 0) { result.add(new Position(position.getRow() - 1, position.getCol())); }
+    if (position.getRow() + 1 < this.getRows()) { result.add(new Position(position.getRow() + 1, position.getCol())); }
+    if (position.getCol() - 1 >= 0) { result.add(new Position(position.getRow(), position.getCol() - 1)); }
+    if (position.getCol() + 1 < this.getCols()) { result.add(new Position(position.getRow(), position.getCol() + 1)); }
     return result;
   }
-    // def get_bordering_nesw(self, position):
-    //     result = {
-    //         'north': None,
-    //         'east': None,
-    //         'south': None,
-    //         'west': None
-    //     }
-    //     result['north'] = self.spaces[position.row - 1][position.col] \
-    //         if position.row - 1 < self.rows else None
-    //     result['east'] = self.spaces[position.row][position.col + 1] \
-    //         if position.col + 1 < self.cols else None
-    //     result['south'] = self.spaces[position.row + 1][position.col] \
-    //         if position.row + 1 < self.rows else None
-    //     result['west'] = self.spaces[position.row][position.col - 1] \
-    //         if position.col - 1 >= 0 else None
-    //     return result
-    //
-    // def get_surrounding(self, position):
-    //     result = []
-    //     for row_adj in range(-1, 2):
-    //         for col_adj in range(-1, 2):
-    //             if row_adj != 0 or col_adj != 0:
-    //                 new_row = position.row + row_adj
-    //                 new_col = position.col + col_adj
-    //                 if new_row >= 0 and new_row < self.rows and \
-    //                         new_col >= 0 and new_col < self.cols:
-    //                     result.append(self.spaces[new_row][new_col])
-    //     return result
 
-    public void startTurn(Player player) {
-      if (player.isOpponent()) {
-        for (int row = this.rows - 1; row >= 0; row--) {
-          for (int col = this.cols - 1; col >= 0; col--) {
-            Position position = new Position(row, col);
-            Summon summon = this.tiles.stream()
-              .filter(t -> t.getPosition().equals(position) && t.getSummon() instanceof Unit && t.getOwner() == player)
-              .map(t -> t.getSummon())
-              .findAny().orElse(null);
-            if (summon != null) {
-              Unit unit = (Unit)summon;
-              if (unit.isFrozen()) {
-                unit.unfreeze();
-              } else {
-                unit.attackOrMoveAhead(game, player, position);
-              }
-            }
-          }
-        }
-      } else {
-        for (int row = 0; row < this.rows; row++) {
-          for (int col = 0; col < this.cols; col++) {
-            Position position = new Position(row, col);
-            Summon summon = this.tiles.stream()
-              .filter(t -> t.getPosition().equals(position) && t.getSummon() instanceof Unit && t.getOwner() == player)
-              .map(t -> t.getSummon())
-              .findAny().orElse(null);
-            if (summon != null) {
-              Unit unit = (Unit)summon;
-              if (unit.isFrozen()) {
-                unit.unfreeze();
-              } else {
-                unit.attackOrMoveAhead(game, player, position);
-              }
-            }
+  public List<Position> getSurroundingList(Position position) {
+    List<Position> surrounding = new ArrayList<Position>();
+    for (int row = -1; row <= 1; row++) {
+      for (int col = -1; col <= 1; col++) {
+        if (row != 0 || col != 0) {
+          int newRow = position.getRow() + row;
+          int newCol = position.getCol() + col;
+          if (newRow >= 0 && newRow < this.getRows() && newCol >= 0 && newCol < this.getCols()) {
+            surrounding.add(new Position(position.getRow() + row, position.getCol() + col));
           }
         }
       }
     }
+    return surrounding;
+  }
 
-    public void summon(Summon card, Player player, Position position) {
-      if (this.isTileEmptyAt(position)) { //&& player.is_behind_front_line(position):
-        this.tiles.add(new Tile(player, card, position));
+  public void startTurn(Player player) {
+    if (player.isOpponent()) {
+      for (int row = this.rows - 1; row >= 0; row--) {
+        for (int col = this.cols - 1; col >= 0; col--) {
+          Position position = new Position(row, col);
+          Summon summon = this.tiles.stream()
+            .filter(t -> t.getPosition().equals(position) && t.getSummon() instanceof Unit && t.getOwner() == player)
+            .map(t -> t.getSummon())
+            .findAny().orElse(null);
+          if (summon != null) {
+            Unit unit = (Unit)summon;
+            if (unit.isFrozen()) {
+              unit.unfreeze();
+            } else {
+              unit.attackOrMoveAhead(game, player, position);
+            }
+          }
+        }
       }
-    }
-
-    public String toString() {
-      StringBuilder result = new StringBuilder();
-      result.append("  ");
-      for (int col = 0; col < this.cols; col++) {
-        result.append(String.format(" %s  ", (char)('A' + col)));
-      }
-      result.append(String.format("%n"));
+    } else {
       for (int row = 0; row < this.rows; row++) {
-        result.append(String.format("%d ", row));
         for (int col = 0; col < this.cols; col++) {
           Position position = new Position(row, col);
-          result.append((this.isTileEmptyAt(position)) ? "   " : this.getTileAt(position).toString());
-          if (col < this.cols - 1) { result.append("|"); }
-        }
-        if (row < this.rows - 1) {
-          result.append(String.format("%n"));
-          result.append("  ");
-          result.append(Stream.generate(() -> "-").limit(this.cols*4).collect(Collectors.joining("")));
-          result.append(String.format("%n"));
+          Summon summon = this.tiles.stream()
+            .filter(t -> t.getPosition().equals(position) && t.getSummon() instanceof Unit && t.getOwner() == player)
+            .map(t -> t.getSummon())
+            .findAny().orElse(null);
+          if (summon != null) {
+            Unit unit = (Unit)summon;
+            if (unit.isFrozen()) {
+              unit.unfreeze();
+            } else {
+              unit.attackOrMoveAhead(game, player, position);
+            }
+          }
         }
       }
-      return result.toString();
     }
+  }
+
+  public void summon(Summon card, Player player, Position position, boolean checkFrontLine) {
+    if (this.isTileEmptyAt(position)) { //&& player.is_behind_front_line(position):
+      this.tiles.add(new Tile(player, card, position));
+    }
+  }
+
+  public String toString() {
+    StringBuilder result = new StringBuilder();
+    result.append("  ");
+    for (int col = 0; col < this.cols; col++) {
+      result.append(String.format(" %s  ", (char)('A' + col)));
+    }
+    result.append(String.format("%n"));
+    for (int row = 0; row < this.rows; row++) {
+      result.append(String.format("%d ", row));
+      for (int col = 0; col < this.cols; col++) {
+        Position position = new Position(row, col);
+        result.append((this.isTileEmptyAt(position)) ? "   " : this.getTileAt(position).toString());
+        if (col < this.cols - 1) { result.append("|"); }
+      }
+      if (row < this.rows - 1) {
+        result.append(String.format("%n"));
+        result.append("  ");
+        result.append(Stream.generate(() -> "-").limit(this.cols*4).collect(Collectors.joining("")));
+        result.append(String.format("%n"));
+      }
+    }
+    return result.toString();
+  }
 }

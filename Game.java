@@ -31,6 +31,13 @@ public class Game {
 
   public Player getTopPlayer() {return this.topPlayer;}
 
+  public Player getOpponent(Player player) {
+    if (player == this.getBottomPlayer()) {
+      return this.getTopPlayer();
+    }
+    return this.getBottomPlayer();
+  }
+
   public Player getActivePlayer() {
     if (this.bottomPlayerGoesFirst) {
       if (this.turnCounter % 2 == 1) {
@@ -53,6 +60,7 @@ public class Game {
 
   public void endTurn() {
     this.getActivePlayer().fillMana(this.turnCounter / 2 + 4);
+    this.getActivePlayer().fillHand();
     this.turnCounter += 1;
   }
 
@@ -72,6 +80,7 @@ public class Game {
       this.topPlayer.toString() + String.format("%n") +
       this.board.toString() + String.format("%n") +
       ((this.bottomPlayer == this.getActivePlayer()) ? "-> ": "   ") +
-      this.bottomPlayer.toString() + String.format("%n");
+      this.bottomPlayer.toString() + String.format("%n") +
+      this.getActivePlayer().getHand();
   }
 }

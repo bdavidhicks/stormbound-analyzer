@@ -1,6 +1,5 @@
 package com.stormboundanalyzer;
 
-import java.util.Random;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,6 +27,7 @@ class GreenPrototypes extends Construct {
   }
 
   public void onDeath(Game game, Player player, Position position) {
+    super.onDeath(game, player, position);
     // give a random boarding ENEMY unit strength equal to level
     Board board = game.getBoard();
     List<Position> bordering = board.getBorderingList(position);
@@ -39,8 +39,7 @@ class GreenPrototypes extends Construct {
       .map(b -> board.getTileAt(b).getSummon())
       .collect(Collectors.toList());
     if (targets.size() > 0) {
-      Random rand = new Random();
-      Summon choice = targets.get(rand.nextInt(targets.size()));
+      Summon choice = Choice.chooseOne(targets);
       choice.addStrength(this.level);
     }
   }

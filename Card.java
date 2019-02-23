@@ -38,9 +38,11 @@ public class Card implements Comparable<Card> {
   public void play(Game game, Player player, Position position) {
     if (this.canPlay(game, player, position)) {
       player.spendMana(this.cost);
-      // TODO: remove card from hand
+      player.discardCard(this, false);
     }
   }
+
+  public void afterPlay(Game game, Player player, Position position) { }
 
   public String getName() { return this.name; }
   public int getLevel() { return this.level; }

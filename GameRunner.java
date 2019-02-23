@@ -52,27 +52,40 @@ public class GameRunner {
       bottomPlayerGoesFirst
     );
     if (bottomPlayerDeck != null) {
-      game.getBottomPlayer().setDeck(bottomPlayerDeck.getCards());
+      game.getBottomPlayer().setDeck(bottomPlayerDeck);
+      game.getBottomPlayer().fillHand();
     }
     if (topPlayerDeck != null) {
-      game.getTopPlayer().setDeck(topPlayerDeck.getCards());
+      game.getTopPlayer().setDeck(topPlayerDeck);
+      game.getTopPlayer().fillHand();
     }
+
     System.out.println(game.toString());
-    List<Card> cards = new ArrayList<Card>();
-    for (int level = 1; level <= 5; level++) {
-      cards.add(new GreenPrototypes(level));
-      cards.add(new LawlessHerd(level));
-    }
-    Collections.sort(cards);
+    // List<Card> cards = new ArrayList<Card>();
+    // for (int level = 1; level <= 5; level++) {
+    //   cards.add(new GreenPrototypes(level));
+    //   cards.add(new LawlessHerd(level));
+    // }
+    // Collections.sort(cards);
 
     while (!game.isOver()) {
       char action = gr.chooseAction(gr.sc);
       if (action == 'p') {
-        Card cardToPlay = gr.chooseFromList(gr.sc, "Pick a card to play: ", cards);
-        Position locationToPlay = gr.chooseLocation(gr.sc, "Pick a location to play: a0 a1 ... d4 ");
-        gr.playCard(game, game.getActivePlayer(), locationToPlay, cardToPlay.copyCard());
+        if (game.getActivePlayer().getHand().getCards().size() > 0) {
+          Card cardToPlay = gr.chooseFromList(gr.sc, "Pick a card to play: ", game.getActivePlayer().getHand().getCards());
+          Position locationToPlay = gr.chooseLocation(gr.sc, "Pick a location to play: a0 a1 ... d4 ");
+          gr.playCard(game, game.getActivePlayer(), locationToPlay, cardToPlay);
+        } else {
+          System.out.println("No cards left to play...");
+        }
       } else if (action == 'd') {
-        Card cardToDiscard = gr.chooseFromList(gr.sc, "Pick a card to discard: ", cards);
+        if (game.getActivePlayer().getHand().getCards().size() > 0) {
+          Card cardToDiscard = gr.chooseFromList(gr.sc, "Pick a card to discard: ", game.getActivePlayer().getHand().getCards());
+          game.getActivePlayer().discardCard(cardToDiscard, true);
+          System.out.println(game.toString());
+        } else {
+          System.out.println("No cards left to discard...");
+        }
       } else if (action == 'e') {
         gr.nextTurn(game);
       }
@@ -92,10 +105,13 @@ public class GameRunner {
     if (card.canPlay(game, player, position)) {
       System.out.println(String.format("%s playing level %d %s at %s", player.getName(), card.getLevel(), card.getName(), position.toString()));
       card.play(game, player, position);
-      System.out.println(game.toString());
+      if (card instanceof Summon) {
+        card.afterPlay(game, player, position);
+      }
     } else {
       System.out.println(String.format("%s unable to play level %d %s at %s", player.getName(), card.getLevel(), card.getName(), position.toString()));
     }
+    System.out.println(game.toString());
   }
 
   public <T> T chooseFromList(Scanner sc, String prompt, List<T> list) {

@@ -23,20 +23,24 @@ class Unit extends Summon implements Comparable<Card> {
   public void play(Game game, Player player, Position position) {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
-      Position currentPosition = position;
-      int remainingMovement = this.movement;
-      while (remainingMovement > 0 && this.currentStrength > 0) {
-        Position nextAttackPosition = this.calcNextAttack(game, player, currentPosition);
-        if (nextAttackPosition != null) {
-          this.onAttack(game, player, currentPosition, nextAttackPosition);
-          this.attack(game, player, currentPosition, nextAttackPosition);
-          currentPosition = nextAttackPosition;
-        } else {
-          Position positionInFront = game.getBoard().getPositionInFront(position, player);
-          this.move(game, player, position, positionInFront);
-        }
-        remainingMovement -= 1;
+    }
+  }
+
+  public void afterPlay(Game game, Player player, Position position) {
+    super.afterPlay(game, player, position);
+    Position currentPosition = position;
+    int remainingMovement = this.movement;
+    while (remainingMovement > 0 && this.currentStrength > 0) {
+      Position nextAttackPosition = this.calcNextAttack(game, player, currentPosition);
+      if (nextAttackPosition != null) {
+        this.onAttack(game, player, currentPosition, nextAttackPosition);
+        this.attack(game, player, currentPosition, nextAttackPosition);
+        currentPosition = nextAttackPosition;
+      } else {
+        Position positionInFront = game.getBoard().getPositionInFront(position, player);
+        this.move(game, player, position, positionInFront);
       }
+      remainingMovement -= 1;
     }
   }
 

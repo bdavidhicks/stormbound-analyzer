@@ -31,9 +31,12 @@ public class Summon extends Card implements Comparable<Card> {
   public void play(Game game, Player player, Position position) {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
-      game.getBoard().summon(this, player, position);
+      game.getBoard().summon(this, player, position, true);
     }
   }
+
+  public void afterPlay(Game game, Player player, Position position) { }
+
 
   public boolean isFrozen() { return this.frozen; }
   public void unfreeze() {this.frozen = false;}

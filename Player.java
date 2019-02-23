@@ -13,7 +13,8 @@ public class Player {
   Faction faction;
   String name;
   Base base;
-  List<Card> hand, deck;
+  Deck deck;
+  Hand hand;
   public Player(Faction faction, boolean isOpponent, int level, boolean goesFirst) throws Exception {
     if (faction != Faction.NEUTRAL) {
       this.goesFirst = goesFirst;
@@ -23,15 +24,26 @@ public class Player {
       this.level = level;
       this.name = (isOpponent) ? "Opp" : "You";
       this.base = new Base(level);
-      this.hand = new ArrayList<Card>();
+      this.hand = new Hand(4);
     } else {
       throw new Exception("Invalid Faction supplied to player constructor");
     }
   }
-  public void setDeck(List<Card> deck) {
+  public void setDeck(Deck deck) {
     this.deck = deck;
-    this.hand = new ArrayList<Card>();
+    this.hand = new Hand(4);
   }
+  public void discardCard(Card card, boolean replaceCard) {
+    this.getHand().removeCard(card);
+    if (replaceCard) {
+      this.drawCard();
+    }
+  }
+  public void drawCard() {
+    this.getHand().addCard(this.getDeck().drawCard(this.getHand()));
+  }
+  public Deck getDeck() { return this.deck; }
+  public Hand getHand() { return this.hand; }
   public int getCurrentMana() {return this.currentMana;}
   public int getLevel() {return this.level;}
   public boolean goesFirst() {return this.goesFirst;}
@@ -42,6 +54,13 @@ public class Player {
   public void spendMana(int mana) {this.currentMana -= mana;}
   public void addMana(int mana) {this.currentMana += mana;}
   public void fillMana(int mana) {this.currentMana = mana;}
+  public void fillHand() {
+    if (this.getDeck() != null) {
+      while (!this.getHand().isFull()) {
+        this.drawCard();
+      }
+    }
+  }
   public String toString() {
     return String.format("%s - %s with %d health base and %d mana currently", // with line at {front_line}'.format(
       this.name,

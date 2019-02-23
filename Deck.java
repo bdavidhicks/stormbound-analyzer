@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.lang.Class;
 import java.lang.reflect.Constructor;
+import java.util.Random;
+import java.util.stream.Stream;
 
 public class Deck {
   List<Card> cards;
@@ -63,9 +65,30 @@ public class Deck {
   public List<Faction> getFactions() {
     Set<Faction> factions = new HashSet<Faction>();
     this.cards.stream()
-      .map(c -> factions.add(c.getFaction()))
-      .collect(Collectors.toList());
+      .forEach(c -> factions.add(c.getFaction()));
     return new ArrayList<Faction>(factions);
+  }
+
+  public Card drawCard(Hand hand) {
+    List<String> cardsInHandNames = hand.getCards().stream().map(Card::getName).collect(Collectors.toList());
+    List<Card> choices = this.cards.stream()
+      .filter(c -> !cardsInHandNames.contains(c.getName()))
+      .collect(Collectors.toList());
+    if (choices.size() > 0) {
+      Random rand = new Random();
+      Card choice = choices.get(rand.nextInt(choices.size()));
+      try {
+        return choice.copyCard();
+      } catch (Exception ex) {
+        System.out.println("Unexpected Exception caught in Deck.drawCard");
+        System.out.println(ex.toString());
+        return null;
+      }
+    } else {
+      // Should not happen unless Hand size is equals to Deck size!
+      // Deck size is typically 12 and Hand size is typically 4
+      return null;
+    }
   }
 
   public String toString() {
