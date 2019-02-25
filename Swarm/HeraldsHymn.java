@@ -12,7 +12,7 @@ public class HeraldsHymn extends Spell {
   public HeraldsHymn(Integer level) throws Exception {
     super(
       "Herald's Hymn",
-      String.format("Give %d strength to target friendly unit. Command all friendly units in its row forward", level.intValue()),
+      String.format("Give %d strength to target friendly unit. Command all friendly units in its row forward", calcGainStrength(level.intValue())),
       level.intValue(),
       Faction.SWARM_OF_THE_EAST,
       Rarity.COMMON,
@@ -22,6 +22,10 @@ public class HeraldsHymn extends Spell {
 
   public HeraldsHymn copyCard() throws Exception {
     return new HeraldsHymn(this.getLevel());
+  }
+
+  private static int calcGainStrength(int level) {
+    return level;
   }
 
   public boolean canPlay(Game game, Player player, Position position) {
@@ -37,7 +41,7 @@ public class HeraldsHymn extends Spell {
       super.play(game, player, position);
       Board board = game.getBoard();
       Summon target = board.getTileAt(position).getSummon();
-      target.addStrength(this.level);
+      target.addStrength(calcGainStrength(this.getLevel()));
       List<Tile> affected = board.getRowTiles(position.getRow()).stream()
         .filter(t -> t.getOwner() == player &&
           t.getSummon() instanceof Unit &&

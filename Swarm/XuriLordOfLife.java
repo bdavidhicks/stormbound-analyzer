@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class XuriLordOfLife extends DragonHero {
+class XuriLordOfLife extends Dragon {
   private XuriLordOfLife(String name, String text, int level, Faction faction, Rarity rarity, int cost, int strength, int movement) throws Exception {
     super(name, text, level, faction, rarity, cost, strength, movement);
   }
@@ -13,18 +13,26 @@ class XuriLordOfLife extends DragonHero {
   public XuriLordOfLife(Integer level) throws Exception {
     super(
       "Xuri, Lord of Life",
-      String.format("On play, fly to the first empty tile in front. Give %d strength to all friendly units passed", (level.intValue() - 1) / 2 + 2),
+      String.format("On play, fly to the first empty tile in front. Give %d strength to all friendly units passed", calcGainStrength(level.intValue())),
       level.intValue(),
       Faction.SWARM_OF_THE_EAST,
       Rarity.LEGENDARY,
       5,
-      (level.intValue() <= 2) ? (level.intValue() * 2) + 2 : level.intValue() * 2,
+      calcStrength(level.intValue()),
       0
     );
   }
 
   public XuriLordOfLife copyCard() throws Exception {
     return new XuriLordOfLife(this.getLevel());
+  }
+
+  private static int calcGainStrength(int level) {
+    return (level - 1) / 2 + 2;
+  }
+
+  private static int calcStrength(int level) {
+    return (level <= 2) ? (level * 2) + 2 : level * 2;
   }
 
   public void play(Game game, Player player, Position position) {
@@ -44,7 +52,7 @@ class XuriLordOfLife extends DragonHero {
           .filter(t -> t.getOwner() == player &&
             t.getSummon() instanceof Unit &&
             t.getSummon().getCurrentStrength() > 0)
-          .forEach(t -> t.getSummon().addStrength((this.level - 1) / 2 + 2));
+          .forEach(t -> t.getSummon().addStrength(calcGainStrength(this.getLevel())));
       }
     }
   }

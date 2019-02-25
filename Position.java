@@ -8,8 +8,12 @@ class Position {
     this.col = col;
   }
 
-  public boolean equals(Position b) {
-    return this.row == b.row && this.col == b.col;
+  public boolean equals(Object b) {
+    if (b instanceof Position) {
+      Position other = (Position)b;
+      return this.row == other.row && this.col == other.col;
+    }
+    return false;
   }
   public int getRow() {return this.row;}
   public int getCol() {return this.col;}

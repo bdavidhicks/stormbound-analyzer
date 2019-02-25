@@ -17,7 +17,7 @@ class Destructobots extends Construct {
       Faction.IRONCLAD_UNION,
       Rarity.RARE,
       2,
-      1 + level.intValue(),
+      calcStrength(level.intValue()),
       1
     );
   }
@@ -26,19 +26,26 @@ class Destructobots extends Construct {
     return new Destructobots(this.getLevel());
   }
 
+  private static int calcStrength(int level) {
+    return level + 1;
+  }
+
   public void play(Game game, Player player, Position position) {
-    super.play(game, player, position);
-    // deal 1 damage to random friendly unit
-    Board board = game.getBoard();
-    List<Tile> targets = board.getAllTargets().stream()
-      .filter(t -> t.getSummon() instanceof Unit &&
-        t.getSummon().getCurrentStrength() > 0 &&
-        t.getSummon() != this)
-      .collect(Collectors.toList());
-    if (targets.size() > 0) {
-      Tile choice = Choice.chooseOne(targets);
-      Summon summon = choice.getSummon();
-      summon.takeDamage(game, choice.getOwner(), choice.getPosition(), 1);
+    if (this.canPlay(game, player, position)) {
+      super.play(game, player, position);
+      // deal 1 damage to random friendly unit
+      Board board = game.getBoard();
+      List<Tile> targets = board.getAllTargets().stream()
+        .filter(t -> t.getOwner().equals(player) &&
+          t.getSummon() instanceof Unit &&
+          t.getSummon().isAlive() &&
+          !t.getSummon().equals(this))
+        .collect(Collectors.toList());
+      if (targets.size() > 0) {
+        Tile choice = Choice.chooseOne(targets);
+        Summon summon = choice.getSummon();
+        summon.takeDamage(game, choice.getOwner(), choice.getPosition(), 1);
+      }
     }
   }
 }

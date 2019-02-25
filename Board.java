@@ -94,6 +94,32 @@ public class Board {
     return targets;
   }
 
+  public List<Tile> getSurroundingTargets(Position position) {
+    List<Position> surrounding = this.getSurroundingList(position);
+    List<Tile> targets = this.tiles.stream()
+      .filter(t -> surrounding.contains(t.getPosition()))
+      .collect(Collectors.toList());
+    if (position.getRow() == 0) {
+      targets.add(new Tile(this.game.getTopPlayer(), this.game.getTopPlayer().getPlayerBase(), null));
+    } else if (position.getRow() == this.getRows() - 1) {
+      targets.add(new Tile(this.game.getBottomPlayer(), this.game.getBottomPlayer().getPlayerBase(), null));
+    }
+    return targets;
+  }
+
+  public List<Tile> getBorderingTargets(Position position) {
+    List<Position> bordering = this.getBorderingList(position);
+    List<Tile> targets = this.tiles.stream()
+      .filter(t -> bordering.contains(t.getPosition()))
+      .collect(Collectors.toList());
+    if (position.getRow() == 0) {
+      targets.add(new Tile(this.game.getTopPlayer(), this.game.getTopPlayer().getPlayerBase(), null));
+    } else if (position.getRow() == this.getRows() - 1) {
+      targets.add(new Tile(this.game.getBottomPlayer(), this.game.getBottomPlayer().getPlayerBase(), null));
+    }
+    return targets;
+  }
+
   public List<Tile> getRowTiles(int row) {
     return this.tiles.stream()
       .filter(t -> t.getPosition().getRow() == row)

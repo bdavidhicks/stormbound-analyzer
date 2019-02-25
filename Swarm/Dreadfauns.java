@@ -12,18 +12,26 @@ class Dreadfauns extends Satyr {
   public Dreadfauns(Integer level) throws Exception {
     super(
       "Dreadfauns",
-      String.format("On play, spawn 2 Satyrs with %d strength on random bordering tiles", (level.intValue() - 1) / 2 + 2),
+      String.format("On play, spawn 2 Satyrs with %d strength on random bordering tiles", calcSpawnStrength(level.intValue())),
       level.intValue(),
       Faction.SWARM_OF_THE_EAST,
       Rarity.COMMON,
       5,
-      (level.intValue() <= 2) ? level.intValue() + 2 : level.intValue() + 1,
+      calcStrength(level.intValue()),
       0
     );
   }
 
   public Dreadfauns copyCard() throws Exception {
     return new Dreadfauns(this.getLevel());
+  }
+
+  private static int calcSpawnStrength(int level) {
+    return (level - 1) / 2 + 2;
+  }
+
+  private static int calcStrength(int level) {
+    return (level <= 2) ? level + 2 : level + 1;
   }
 
   public void play(Game game, Player player, Position position) {
@@ -46,7 +54,7 @@ class Dreadfauns extends Satyr {
                 Faction.SWARM_OF_THE_EAST,
                 Rarity.COMMON,
                 0,
-                (this.level - 1) / 2 + 2,
+                calcSpawnStrength(this.getLevel()),
                 0
               ),
               player,

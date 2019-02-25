@@ -8,12 +8,12 @@ class Mischiefs extends Undead {
   public Mischiefs(Integer level) throws Exception {
     super(
       "Mischiefs",
-      String.format("On play, deal %d damage to the enemy base", (level.intValue() <= 3) ? 1 : 2),
+      String.format("On play, deal %d damage to the enemy base", calcDamage(level.intValue())),
       level.intValue(),
       Faction.SWARM_OF_THE_EAST,
       Rarity.COMMON,
       4,
-      (level.intValue() <= 3) ? level.intValue() + 1 : level.intValue(),
+      calcStrength(level.intValue()),
       1
     );
   }
@@ -22,10 +22,18 @@ class Mischiefs extends Undead {
     return new Mischiefs(this.getLevel());
   }
 
+  private static int calcStrength(int level) {
+    return (level <= 3) ? level + 1 : level;
+  }
+
+  private static int calcDamage(int level) {
+    return (level <= 3) ? 1 : 2;
+  }
+
   public void play(Game game, Player player, Position position) {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
-      game.getOpponent(player).getPlayerBase().takeDamage(game, game.getOpponent(player), null, (this.level <= 3) ? 1 : 2);
+      game.getOpponent(player).getPlayerBase().takeDamage(game, game.getOpponent(player), null, calcDamage(this.getLevel()));
     }
   }
 

@@ -8,7 +8,7 @@ class NorthseaDogs extends Pirate {
   public NorthseaDogs(Integer level) throws Exception {
     super(
       "Northsea Dogs",
-      String.format("When played as the last card in your hand, gain %d strength", (level.intValue() == 5) ? 10 : level.intValue() + 4),
+      String.format("When played as the last card in your hand, gain %d strength", calcGainStrength(level.intValue())),
       level.intValue(),
       Faction.NEUTRAL,
       Rarity.RARE,
@@ -22,12 +22,16 @@ class NorthseaDogs extends Pirate {
     return new NorthseaDogs(this.getLevel());
   }
 
+  private static int calcGainStrength(int level) {
+    return (level == 5) ? 10 : level + 4;
+  }
+
   public void play(Game game, Player player, Position position) {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
       // If this is the last card played, add strength to it
       if (player.getHand().isEmpty()) {
-        this.addStrength((this.level == 5) ? 10 : this.level + 4);
+        this.addStrength(calcGainStrength(this.getLevel()));
       }
     }
   }

@@ -13,9 +13,13 @@ class LawlessHerd extends Satyr {
       Faction.NEUTRAL,
       Rarity.COMMON,
       2,
-      1 + level.intValue(),
+      calcStrength(level.intValue()),
       0
     );
+  }
+
+  private static int calcStrength(int level) {
+    return level + 1;
   }
 
   public LawlessHerd copyCard() throws Exception {

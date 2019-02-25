@@ -8,18 +8,26 @@ class Doppelbocks extends Satyr {
   public Doppelbocks(Integer level) throws Exception {
     super(
       "Doppelbocks",
-      String.format("On play, spawn a %d strength Satyr on the tile in front", (level.intValue() - 1) / 2 + 1),
+      String.format("On play, spawn a %d strength Satyr on the tile in front", calcSpawnStrength(level.intValue())),
       level.intValue(),
       Faction.SWARM_OF_THE_EAST,
       Rarity.COMMON,
       2,
-      1 + level.intValue() / 2,
+      calcStrength(level.intValue()),
       0
     );
   }
 
   public Doppelbocks copyCard() throws Exception {
     return new Doppelbocks(this.getLevel());
+  }
+
+  private static int calcSpawnStrength(int level) {
+    return (level - 1) / 2 + 1;
+  }
+
+  private static int calcStrength(int level) {
+    return level / 2 + 1;
   }
 
   public void play(Game game, Player player, Position position) {
@@ -37,7 +45,7 @@ class Doppelbocks extends Satyr {
               Faction.SWARM_OF_THE_EAST,
               Rarity.COMMON,
               0,
-              (this.level - 1) / 2 + 1,
+              calcSpawnStrength(this.getLevel()),
               0
             ),
             player,

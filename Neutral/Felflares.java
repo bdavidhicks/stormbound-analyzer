@@ -12,7 +12,7 @@ class Felflares extends Frostling {
   public Felflares(Integer level) throws Exception {
     super(
       "Felflares",
-      String.format("On play, deal %d damage to a random surrounding enemy", level.intValue() + 1),
+      String.format("On play, deal %d damage to a random surrounding enemy", calcDamage(level.intValue())),
       level.intValue(),
       Faction.NEUTRAL,
       Rarity.COMMON,
@@ -24,6 +24,10 @@ class Felflares extends Frostling {
 
   public Felflares copyCard() throws Exception {
     return new Felflares(this.getLevel());
+  }
+
+  private static int calcDamage(int level) {
+    return level + 1;
   }
 
   public void play(Game game, Player player, Position position) {
@@ -42,7 +46,7 @@ class Felflares extends Frostling {
       if (targets.size() > 0) {
         Position choice = Choice.chooseOne(targets);
         Tile tile = board.getTileAt(choice);
-        tile.getSummon().takeDamage(game, tile.getOwner(), tile.getPosition(), this.level + 1);
+        tile.getSummon().takeDamage(game, tile.getOwner(), tile.getPosition(), calcDamage(this.getLevel()));
       }
     }
   }

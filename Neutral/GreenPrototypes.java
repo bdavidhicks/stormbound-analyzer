@@ -12,7 +12,7 @@ class GreenPrototypes extends Construct {
   public GreenPrototypes(Integer level) throws Exception {
     super(
       "Green Prototypes",
-      String.format("On death, give %d strength to a random bordering ENEMY unit", level),
+      String.format("On death, give %d strength to a random bordering ENEMY unit", level.intValue()),
       level.intValue(),
       Faction.NEUTRAL,
       Rarity.RARE,
@@ -40,7 +40,7 @@ class GreenPrototypes extends Construct {
       .collect(Collectors.toList());
     if (targets.size() > 0) {
       Summon choice = Choice.chooseOne(targets);
-      choice.addStrength(this.level);
+      choice.addStrength(this.getLevel());
     }
   }
 }

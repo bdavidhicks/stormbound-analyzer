@@ -17,13 +17,17 @@ class ForgottenSouls extends Undead {
       Faction.SWARM_OF_THE_EAST,
       Rarity.RARE,
       3,
-      1 + level.intValue() / 2,
+      calcStrength(level.intValue()),
       1
     );
   }
 
   public ForgottenSouls copyCard() throws Exception {
     return new ForgottenSouls(this.getLevel());
+  }
+
+  private static int calcStrength(int level) {
+    return level / 2 + 1;
   }
 
   public void play(Game game, Player player, Position position) {

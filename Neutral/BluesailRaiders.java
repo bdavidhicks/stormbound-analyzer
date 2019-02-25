@@ -13,12 +13,16 @@ class BluesailRaiders extends Pirate {
       Faction.NEUTRAL,
       Rarity.COMMON,
       5,
-      level.intValue() + 2,
+      calcStrength(level.intValue()),
       2
     );
   }
 
   public BluesailRaiders copyCard() throws Exception {
     return new BluesailRaiders(this.getLevel());
+  }
+
+  private static int calcStrength(int level) {
+    return level + 2;
   }
 }

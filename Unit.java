@@ -31,7 +31,7 @@ class Unit extends Summon implements Comparable<Card> {
     Position currentPosition = position;
     int remainingMovement = this.getMovement();
     while (remainingMovement > 0 && this.getCurrentStrength() > 0) {
-      Position nextAttackPosition = this.calcNextAttack(game, player, currentPosition);
+      Position nextAttackPosition = calcNextAttack(game, player, currentPosition);
       this.attack(game, player, currentPosition, nextAttackPosition);
       currentPosition = nextAttackPosition;
       remainingMovement -= 1;
@@ -92,6 +92,18 @@ class Unit extends Summon implements Comparable<Card> {
         }
       }
     }
+  }
+
+  public boolean isHero() {
+    return this.getRarity().equals(Rarity.LEGENDARY);
+  }
+
+  public void takeDamage(Game game, Player player, Position position, int damage) throws RuntimeException {
+    super.takeDamage(game, player, position, damage);
+  }
+
+  public void onDeath(Game game, Player player, Position position) {
+    super.onDeath(game, player, position);
   }
 
   @Override
