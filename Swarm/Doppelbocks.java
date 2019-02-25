@@ -26,7 +26,7 @@ class Doppelbocks extends Satyr {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
       Board board = game.getBoard();
-      Position positionInFront = board.getPositionInFront(position, player);
+      Position positionInFront = board.getPositionInFront(player, position);
       if (positionInFront != null && board.isTileEmptyAt(positionInFront)) {
         try {
           board.summon(

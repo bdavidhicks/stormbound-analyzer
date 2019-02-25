@@ -32,10 +32,10 @@ class XuriLordOfLife extends DragonHero {
       super.play(game, player, position);
       Board board = game.getBoard();
       List<Position> passed = new ArrayList<Position>();
-      Position positionInFront = board.getPositionInFront(position, player);
+      Position positionInFront = board.getPositionInFront(player, position);
       while (positionInFront != null && !board.isTileEmptyAt(positionInFront)) {
         passed.add(positionInFront);
-        positionInFront = board.getPositionInFront(positionInFront, player);
+        positionInFront = board.getPositionInFront(player, positionInFront);
       }
       if (positionInFront != null) {
         this.move(game, player, position, positionInFront);

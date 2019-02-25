@@ -2,14 +2,14 @@ package com.stormboundanalyzer;
 
 import java.util.Comparator;
 
-class Base extends Structure implements Comparable<Card> {
+class Structure extends Summon implements Comparable<Card> {
 
-  public Base(String name, String text, int level, Faction faction, Rarity rarity, int cost, int strength) throws Exception {
+  public Structure(String name, String text, int level, Faction faction, Rarity rarity, int cost, int strength) throws Exception {
     super(name, text, level, faction, rarity, cost, strength);
   }
 
-  public Base copyCard() throws Exception {
-    return new Base(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getRarity(), this.getCost(), this.getStartingStrength());
+  public Structure copyCard() throws Exception {
+    return new Structure(this.getName(), this.getText(), this.getLevel(), this.getFaction(), this.getRarity(), this.getCost(), this.getStartingStrength());
   }
 
   public boolean canPlay(Game game, Player player, Position position) {

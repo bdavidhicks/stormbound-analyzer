@@ -60,25 +60,3 @@ public class Card implements Comparable<Card> {
     return String.format("(%2d) %-20s            : %s", this.getCost(), this.getName(), this.getText());
   }
 }
-
-// class Spell(Card):
-//   def __init__(self, name, text, level, faction, cost, has_target,
-//                valid_targets):
-//       super(Summon, self).__init__(name, text, level, faction, cost)
-//       self.has_target = has_target
-//       self.valid_targets = valid_targets
-//
-//
-//
-//
-// class Structure(Summon):
-//   def __init__(self, name, text, level, faction, cost, strength):
-//       super(Structure, self).__init__(name, text, level, faction, cost,
-//                                       strength)
-//
-//
-//
-// class Frostling(Unit):
-//   def __init__(self, name, text, level, faction, cost, strength, movement):
-//       super(Frostling, self).__init__(
-//           name, text, level, faction, cost, strength, movement)

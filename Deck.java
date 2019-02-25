@@ -69,8 +69,11 @@ public class Deck {
     return new ArrayList<Faction>(factions);
   }
 
-  public Card drawCard(Hand hand) {
+  public Card drawCard(Hand hand, Card cardToIgnore) {
     List<String> cardsInHandNames = hand.getCards().stream().map(Card::getName).collect(Collectors.toList());
+    if (cardToIgnore != null) {
+      cardsInHandNames.add(cardToIgnore.getName());
+    }
     List<Card> choices = this.cards.stream()
       .filter(c -> !cardsInHandNames.contains(c.getName()))
       .collect(Collectors.toList());

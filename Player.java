@@ -12,10 +12,10 @@ public class Player {
   boolean isOpponent, goesFirst;
   Faction faction;
   String name;
-  Base base;
+  PlayerBase playerBase;
   Deck deck;
   Hand hand;
-  public Player(Faction faction, boolean isOpponent, int level, boolean goesFirst) throws Exception {
+  public Player(Faction faction, boolean isOpponent, int baseStrength, boolean goesFirst) throws Exception {
     if (faction != Faction.NEUTRAL) {
       this.goesFirst = goesFirst;
       this.currentMana = (goesFirst) ? 3 : 4;
@@ -23,7 +23,7 @@ public class Player {
       this.faction = faction;
       this.level = level;
       this.name = (isOpponent) ? "Opp" : "You";
-      this.base = new Base(level);
+      this.playerBase = new PlayerBase(baseStrength);
       this.hand = new Hand(4);
     } else {
       throw new Exception("Invalid Faction supplied to player constructor");
@@ -36,11 +36,11 @@ public class Player {
   public void discardCard(Card card, boolean replaceCard) {
     this.getHand().removeCard(card);
     if (replaceCard) {
-      this.drawCard();
+      this.drawCard(card);
     }
   }
-  public void drawCard() {
-    this.getHand().addCard(this.getDeck().drawCard(this.getHand()));
+  public void drawCard(Card cardToIgnore) {
+    this.getHand().addCard(this.getDeck().drawCard(this.getHand(), cardToIgnore));
   }
   public Deck getDeck() { return this.deck; }
   public Hand getHand() { return this.hand; }
@@ -50,22 +50,22 @@ public class Player {
   public boolean isOpponent() {return this.isOpponent;}
   public Faction getFaction() {return this.faction;}
   public String getName() {return this.name;}
-  public Base getBase() {return this.base;}
+  public PlayerBase getPlayerBase() {return this.playerBase;}
   public void spendMana(int mana) {this.currentMana -= mana;}
   public void addMana(int mana) {this.currentMana += mana;}
   public void fillMana(int mana) {this.currentMana = mana;}
   public void fillHand() {
     if (this.getDeck() != null) {
       while (!this.getHand().isFull()) {
-        this.drawCard();
+        this.drawCard(null);
       }
     }
   }
   public String toString() {
-    return String.format("%s - %s with %d health base and %d mana currently", // with line at {front_line}'.format(
+    return String.format("%s - %s with %d strength base and %d mana currently", // with line at {front_line}'.format(
       this.name,
       this.faction.getName(),
-      this.base.getHealth(),
+      this.playerBase.getCurrentStrength(),
       this.getCurrentMana()
       //this.front_line
     );

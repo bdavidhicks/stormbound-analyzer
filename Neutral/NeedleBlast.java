@@ -1,5 +1,9 @@
 package com.stormboundanalyzer;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class NeedleBlast extends Spell {
   public NeedleBlast(String name, String text, int level, Faction faction, Rarity rarity, int cost) throws Exception {
     super(name, text, level, faction, rarity, cost);
@@ -23,6 +27,17 @@ public class NeedleBlast extends Spell {
   public void play(Game game, Player player, Position position) {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
+      List<Tile> targets = game.getBoard().getAllTargets().stream()
+        .filter(t -> t.getOwner() != player &&
+          t.getSummon().isAlive())
+        .collect(Collectors.toList());
+      if (targets.size() > 0) {
+        List<Tile> choices = Choice.chooseMany(targets, this.level / 2 + 2);
+        for (Tile tile : choices) {
+          Summon summon = tile.getSummon();
+          summon.takeDamage(game, tile.getOwner(), tile.getPosition(), (this.level - 1) / 2 + 2);
+        }
+      }
     }
   }
 }

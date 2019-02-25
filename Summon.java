@@ -44,10 +44,17 @@ public class Summon extends Card implements Comparable<Card> {
   public int getCurrentStrength() { return this.currentStrength; }
   public int getStartingStrength() { return this.startingStrength; }
   public boolean isPoisoned() { return this.poisoned; }
-  public void takeDamage(int damage) { this.currentStrength -= damage; }
+  public void takeDamage(Game game, Player player, Position position, int damage) throws RuntimeException {
+    this.currentStrength -= damage;
+    if (this.currentStrength <= 0) {
+      this.onDeath(game, player, position);
+    }
+  }
   public void addStrength(int amount) { this.currentStrength += amount; }
   public void onTurnBegin(Game game, Player player, Position position) { }
-  public void onDeath(Game game, Player player, Position position) { }
+  public void onDeath(Game game, Player player, Position position) throws RuntimeException {
+    game.getBoard().remove(game.getBoard().getTileAt(position));
+  }
 
   @Override
   public int compareTo(Card c) {

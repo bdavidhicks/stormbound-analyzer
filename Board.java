@@ -29,7 +29,7 @@ public class Board {
       .findAny().orElse(null);
   }
   public boolean isTileEmptyAt(Position position) {
-    return this.tiles.stream()
+    return position == null || this.tiles.stream()
       .map(Tile::getPosition)
       .filter(pos -> pos.equals(position))
       .collect(Collectors.toList()).size() == 0;
@@ -39,7 +39,7 @@ public class Board {
     this.tiles.remove(tile);
   }
 
-  public Position getPositionInFront(Position position, Player player) {
+  public Position getPositionInFront(Player player, Position position) {
     if (player.isOpponent() && position.getRow() < this.rows - 1) {
       return new Position(position.getRow() + 1, position.getCol());
     } else if (!player.isOpponent() && position.getRow() > 0) {
@@ -87,6 +87,19 @@ public class Board {
     return surrounding;
   }
 
+  public List<Tile> getAllTargets() {
+    List<Tile> targets = new ArrayList<Tile>(this.tiles);
+    targets.add(new Tile(this.game.getTopPlayer(), this.game.getTopPlayer().getPlayerBase(), null));
+    targets.add(new Tile(this.game.getBottomPlayer(), this.game.getBottomPlayer().getPlayerBase(), null));
+    return targets;
+  }
+
+  public List<Tile> getRowTiles(int row) {
+    return this.tiles.stream()
+      .filter(t -> t.getPosition().getRow() == row)
+      .collect(Collectors.toList());
+  }
+
   public void startTurn(Player player) {
     if (player.isOpponent()) {
       for (int row = this.rows - 1; row >= 0; row--) {
@@ -101,7 +114,7 @@ public class Board {
             if (unit.isFrozen()) {
               unit.unfreeze();
             } else {
-              unit.attackOrMoveAhead(game, player, position);
+              unit.attack(game, player, position, this.getPositionInFront(player, position));
             }
           }
         }
@@ -119,7 +132,7 @@ public class Board {
             if (unit.isFrozen()) {
               unit.unfreeze();
             } else {
-              unit.attackOrMoveAhead(game, player, position);
+              unit.attack(game, player, position, this.getPositionInFront(player, position));
             }
           }
         }

@@ -40,11 +40,9 @@ class ForgottenSouls extends Undead {
         .collect(Collectors.toList());
       if (targets.size() > 0) {
         Tile choice = Choice.chooseOne(targets);
-        Position positionInFront = board.getPositionInFront(choice.getPosition(), player);
-        if (positionInFront == null || board.isTileEmptyAt(positionInFront)) {
-          Unit unit = (Unit)choice.getSummon();
-          unit.move(game, player, choice.getPosition(), positionInFront);
-        }
+        Position positionInFront = board.getPositionInFront(player, choice.getPosition());
+        Unit unit = (Unit)choice.getSummon();
+        unit.attack(game, player, choice.getPosition(), positionInFront);
       }
     }
   }

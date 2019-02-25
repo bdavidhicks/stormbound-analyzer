@@ -25,7 +25,7 @@ class Mischiefs extends Undead {
   public void play(Game game, Player player, Position position) {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
-      game.getOpponent(player).getBase().takeDamage((this.level <= 3) ? 1 : 2);
+      game.getOpponent(player).getPlayerBase().takeDamage(game, game.getOpponent(player), null, (this.level <= 3) ? 1 : 2);
     }
   }
 

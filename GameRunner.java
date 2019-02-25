@@ -67,32 +67,35 @@ public class GameRunner {
     //   cards.add(new LawlessHerd(level));
     // }
     // Collections.sort(cards);
-
-    while (!game.isOver()) {
-      char action = gr.chooseAction(gr.sc);
-      if (action == 'p') {
-        if (game.getActivePlayer().getHand().getCards().size() > 0) {
-          Card cardToPlay = gr.chooseFromList(gr.sc, "Pick a card to play: ", game.getActivePlayer().getHand().getCards());
-          Position locationToPlay = gr.chooseLocation(gr.sc, "Pick a location to play: a0 a1 ... d4 ");
-          gr.playCard(game, game.getActivePlayer(), locationToPlay, cardToPlay);
-        } else {
-          System.out.println("No cards left to play...");
+    try {
+      while (!game.isOver()) {
+        char action = gr.chooseAction(gr.sc);
+        if (action == 'p') {
+          if (game.getActivePlayer().getHand().getCards().size() > 0) {
+            Card cardToPlay = gr.chooseFromList(gr.sc, "Pick a card to play: ", game.getActivePlayer().getHand().getCards());
+            Position locationToPlay = gr.chooseLocation(gr.sc, "Pick a location to play: a0 a1 ... d4 ");
+            gr.playCard(game, game.getActivePlayer(), locationToPlay, cardToPlay);
+          } else {
+            System.out.println("No cards left to play...");
+          }
+        } else if (action == 'd') {
+          if (game.getActivePlayer().getHand().getCards().size() > 0) {
+            Card cardToDiscard = gr.chooseFromList(gr.sc, "Pick a card to discard: ", game.getActivePlayer().getHand().getCards());
+            game.getActivePlayer().discardCard(cardToDiscard, true);
+            System.out.println(game.toString());
+          } else {
+            System.out.println("No cards left to discard...");
+          }
+        } else if (action == 'e') {
+          gr.nextTurn(game);
         }
-      } else if (action == 'd') {
-        if (game.getActivePlayer().getHand().getCards().size() > 0) {
-          Card cardToDiscard = gr.chooseFromList(gr.sc, "Pick a card to discard: ", game.getActivePlayer().getHand().getCards());
-          game.getActivePlayer().discardCard(cardToDiscard, true);
-          System.out.println(game.toString());
-        } else {
-          System.out.println("No cards left to discard...");
-        }
-      } else if (action == 'e') {
-        gr.nextTurn(game);
       }
     }
-    System.out.println("---------GAME OVER---------");
-    System.out.println(String.format("%s won the game", game.getWinner()));
-    System.exit(0);
+    catch (RuntimeException rte) {
+      System.out.println(String.format("---------%s---------", rte.getMessage()));
+      System.out.println(String.format("%s won the game", game.getWinner()));
+      System.exit(0);
+    }
   }
   public void nextTurn(Game game) {
     game.endTurn();

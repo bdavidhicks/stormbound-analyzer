@@ -29,55 +29,29 @@ class Unit extends Summon implements Comparable<Card> {
   public void afterPlay(Game game, Player player, Position position) {
     super.afterPlay(game, player, position);
     Position currentPosition = position;
-    int remainingMovement = this.movement;
-    while (remainingMovement > 0 && this.currentStrength > 0) {
+    int remainingMovement = this.getMovement();
+    while (remainingMovement > 0 && this.getCurrentStrength() > 0) {
       Position nextAttackPosition = this.calcNextAttack(game, player, currentPosition);
-      if (nextAttackPosition != null) {
-        this.onAttack(game, player, currentPosition, nextAttackPosition);
-        this.attack(game, player, currentPosition, nextAttackPosition);
-        currentPosition = nextAttackPosition;
-      } else {
-        Position positionInFront = game.getBoard().getPositionInFront(position, player);
-        this.move(game, player, position, positionInFront);
-      }
+      this.attack(game, player, currentPosition, nextAttackPosition);
+      currentPosition = nextAttackPosition;
       remainingMovement -= 1;
-    }
-  }
-
-  public void attackOrMoveAhead(Game game, Player player, Position position) {
-    Position front = game.getBoard().getPositionInFront(position, player);
-    if (front == null) {
-      this.onAttack(game, player, position, front);
-      this.move(game, player, position, front);
-    } else if (front != null && !game.getBoard().isTileEmptyAt(front) && game.getBoard().getTileAt(front).getOwner() != player) {
-      this.onAttack(game, player, position, front);
-      this.attack(game, player, position, front);
-    } else if (front != null && game.getBoard().isTileEmptyAt(front)) {
-      this.move(game, player, position, front);
     }
   }
 
   public void move(Game game, Player player, Position position, Position newPosition) {
     Board board = game.getBoard();
     if (newPosition == null) {
-      if (player == game.getBottomPlayer()) {
-        game.getTopPlayer().getBase().takeDamage(this.currentStrength);
-      } else {
-        game.getBottomPlayer().getBase().takeDamage(this.currentStrength);
-      }
       board.remove(board.getTileAt(position));
-    } else {
-      if (board.isTileEmptyAt(newPosition)) {
-        Tile tile = board.getTileAt(position);
-        tile.getPosition().moveRow(newPosition.getRow() - position.getRow());
-        tile.getPosition().moveCol(newPosition.getCol() - position.getCol());
-        // player.front_line = player.calc_front_line(board)
-      }
+    } else if (board.isTileEmptyAt(newPosition)) {
+      Tile tile = board.getTileAt(position);
+      tile.getPosition().moveRow(newPosition.getRow() - position.getRow());
+      tile.getPosition().moveCol(newPosition.getCol() - position.getCol());
+      // player.front_line = player.calc_front_line(board)
     }
   }
   public Position calcNextAttack(Game game, Player player, Position position) {
     Board board = game.getBoard();
-    Position front = board.getPositionInFront(position, player);
+    Position front = board.getPositionInFront(player, position);
     if (front == null || (front != null && !board.isTileEmptyAt(front) && board.getTileAt(front).getOwner() != player)) {
       return front;
     }
@@ -96,42 +70,27 @@ class Unit extends Summon implements Comparable<Card> {
     } else if (west != null && westHasEnemy) {
       return west;
     }
-    return null;
+    return front;
   }
 
   public void onAttack(Game game, Player player, Position attackPosition, Position defendPosition) { }
 
   public void attack(Game game, Player player, Position attackPosition, Position defendPosition) {
     Board board = game.getBoard();
-    Unit attacker = (Unit)board.getTileAt(attackPosition).getSummon();
-    Summon defender = board.getTileAt(defendPosition).getSummon();
-    int removeStrength = Math.min(attacker.getCurrentStrength(), defender.getCurrentStrength());
-    // System.out.println(removeStrength);
-    Player attackingPlayer = board.getTileAt(attackPosition).getOwner();
-    Player defendingPlayer = board.getTileAt(defendPosition).getOwner();
-    // print('att_sp.card.current_strength before = {}'.format(att_sp.card.current_strength))
-    // print('def_sp.card.current_strength before = {}'.format(def_sp.card.current_strength))
-    attacker.takeDamage(removeStrength);
-    defender.takeDamage(removeStrength);
-    // print('att_sp.card.current_strength after = {}'.format(att_sp.card.current_strength))
-    // print('def_sp.card.current_strength after = {}'.format(def_sp.card.current_strength))
-    if (!defender.isAlive()) {
-      // print('defending card died')
-      // # TODO: this might have to change if the order of effects is wrong
-      defender.onDeath(game, defendingPlayer, defendPosition);
-      board.remove(board.getTileAt(defendPosition));
-      // print('front line before = {}'.format(def_player.front_line))
-      // def_player.front_line = def_player.calc_front_line(board)
-      // print('front line after = {}'.format(def_player.front_line))
-    }
-    if (!attacker.isAlive()) {
-      // print('attacking card died')
-      // # TODO: this might have to change if the order of effects is wrong
-      attacker.onDeath(game, attackingPlayer, attackPosition);
-      board.remove(board.getTileAt(attackPosition));
-    } else {
-      // print('att_sp.card = {}'.format(att_sp.card))
-      attacker.move(game, attackingPlayer, attackPosition, defendPosition);
+    if (!board.isTileEmptyAt(attackPosition) && board.getTileAt(attackPosition).getSummon() instanceof Unit) {
+      Unit attacker = (Unit)board.getTileAt(attackPosition).getSummon();
+      if (defendPosition != null && board.isTileEmptyAt(defendPosition)) {
+        attacker.move(game, player, attackPosition, defendPosition);
+      } else if (defendPosition == null || (board.getTileAt(defendPosition).getOwner() != player)) {
+        Summon defender = (defendPosition != null) ? board.getTileAt(defendPosition).getSummon() : (Summon)game.getOpponent(player).getPlayerBase();
+        int removeStrength = Math.min(attacker.getCurrentStrength(), defender.getCurrentStrength());
+        this.onAttack(game, player, attackPosition, defendPosition);
+        defender.takeDamage(game, game.getOpponent(player), defendPosition, removeStrength);
+        attacker.takeDamage(game, player, attackPosition, removeStrength);
+        if (attacker.isAlive()) {
+          attacker.move(game, player, attackPosition, defendPosition);
+        }
+      }
     }
   }
 

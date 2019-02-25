@@ -32,11 +32,11 @@ class GreenPrototypes extends Construct {
     Board board = game.getBoard();
     List<Position> bordering = board.getBorderingList(position);
     List<Summon> targets = bordering.stream()
-      .filter(b -> !board.isTileEmptyAt(b) &&
-        board.getTileAt(b).getOwner() != player &&
-        board.getTileAt(b).getSummon() instanceof Unit &&
-        board.getTileAt(b).getSummon().getCurrentStrength() > 0)
-      .map(b -> board.getTileAt(b).getSummon())
+      .filter(p -> !board.isTileEmptyAt(p) &&
+        board.getTileAt(p).getOwner() != player &&
+        board.getTileAt(p).getSummon() instanceof Unit &&
+        board.getTileAt(p).getSummon().getCurrentStrength() > 0)
+      .map(p -> board.getTileAt(p).getSummon())
       .collect(Collectors.toList());
     if (targets.size() > 0) {
       Summon choice = Choice.chooseOne(targets);

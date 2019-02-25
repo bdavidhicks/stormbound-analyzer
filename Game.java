@@ -6,19 +6,19 @@ public class Game {
   boolean bottomPlayerGoesFirst;
   int turnCounter;
 
-  public Game(int boardHeight, int boardWidth, Faction bottomPlayerFaction, int bottomPlayerBaseLevel,
-      Faction topPlayerFaction, int topPlayerBaseLevel, boolean bottomPlayerGoesFirst) throws Exception {
+  public Game(int boardHeight, int boardWidth, Faction bottomPlayerFaction, int bottomPlayerBaseStrength,
+      Faction topPlayerFaction, int topPlayerBaseStrength, boolean bottomPlayerGoesFirst) throws Exception {
     this.board = new Board(boardHeight, boardWidth, this);
     this.bottomPlayer = new Player(
       bottomPlayerFaction,
       false,
-      bottomPlayerBaseLevel,
+      bottomPlayerBaseStrength,
       bottomPlayerGoesFirst
     );
     this.topPlayer = new Player(
       topPlayerFaction,
       true,
-      topPlayerBaseLevel,
+      topPlayerBaseStrength,
       !bottomPlayerGoesFirst
     );
     this.turnCounter = 1;
@@ -67,12 +67,16 @@ public class Game {
   public int getTurnCounter() {return turnCounter;}
 
   public Player getWinner() {
-    return (this.topPlayer.getBase().getHealth() <= 0) ? bottomPlayer :
-      (this.bottomPlayer.getBase().getHealth() <= 0) ? topPlayer : null;
+    return (this.topPlayer.getPlayerBase().getCurrentStrength() <= 0) ? bottomPlayer :
+      (this.bottomPlayer.getPlayerBase().getCurrentStrength() <= 0) ? topPlayer : null;
   }
 
   public boolean isOver() {
     return this.getWinner() != null;
+  }
+
+  public void end() throws RuntimeException {
+    throw new RuntimeException("Game Over");
   }
 
   public String toString() {
