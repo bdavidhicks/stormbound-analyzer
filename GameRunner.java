@@ -71,13 +71,15 @@ public class GameRunner {
       while (!game.isOver()) {
         char action = gr.chooseAction(gr.sc);
         if (action == 'p') {
-          if (game.getActivePlayer().getHand().getCards().size() > 0) {
-            Card cardToPlay = gr.chooseFromList(gr.sc, "Pick a card to play: ", game.getActivePlayer().getHand().getCards());
-            Position locationToPlay = gr.chooseLocation(gr.sc, String.format("Pick a location to play: %s",
-              String.join(", ", cardToPlay.getPossiblePlayPositions(game, game.getActivePlayer()).stream().map(Position::toHumanString).collect(Collectors.toList()))));
+          List<Card> playableCards = game.getActivePlayer().getHand().getCards().stream()
+            .filter(c -> c.getPossiblePlayPositions(game, game.getActivePlayer()).size() > 0 && game.getActivePlayer().getCurrentMana() >= c.getCost()).collect(Collectors.toList());
+          if (playableCards.size() > 0) {
+            Card cardToPlay = gr.chooseFromList(gr.sc, "Pick a card to play: ", playableCards);
+            Position locationToPlay = gr.chooseLocation(gr.sc, String.format("Pick a location to play:%n%s",
+              cardToPlay.getPossiblePlayPositions(game, game.getActivePlayer()).stream().map(Position::toHumanString).collect(Collectors.joining(", "))));
             gr.playCard(game, game.getActivePlayer(), locationToPlay, cardToPlay);
           } else {
-            System.out.println("No cards left to play...");
+            System.out.println("No possible cards left to play...");
           }
         } else if (action == 'd') {
           if (game.getActivePlayer().getHand().getCards().size() > 0) {
@@ -93,6 +95,7 @@ public class GameRunner {
       }
     }
     catch (RuntimeException rte) {
+      rte.printStackTrace();
       System.out.println(String.format("---------%s---------", rte.getMessage()));
       System.out.println(String.format("%s won the game", game.getWinner()));
       System.exit(0);

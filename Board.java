@@ -125,7 +125,8 @@ public class Board {
 
   public List<Tile> getPlayerAllTargets(Player player) {
     List<Tile> targets = this.tiles.stream()
-      .filter(t -> t.getOwner().equals(player))
+      .filter(t -> t.getOwner().equals(player) &&
+        t.getSummon().isAlive())
       .collect(Collectors.toList());
     targets.add(new Tile(player, player.getPlayerBase(), null));
     return targets;
@@ -153,10 +154,12 @@ public class Board {
     List<Tile> targets = this.tiles.stream()
       .filter(t -> surrounding.contains(t.getPosition()) &&
         t.getOwner().equals(player) &&
+        t.getSummon().isAlive() &&
         clazz.isInstance(t.getSummon()))
       .collect(Collectors.toList());
-    if ((position.getRow() == 0 && player.equals(this.game.getTopPlayer())) ||
-        (position.getRow() == this.getRows() - 1 && player.equals(this.game.getBottomPlayer())) ) {
+    if (clazz.isInstance(player.getPlayerBase()) && (
+        (position.getRow() == 0 && player.equals(this.game.getTopPlayer())) ||
+        (position.getRow() == this.getRows() - 1 && player.equals(this.game.getBottomPlayer())) ) ) {
       targets.add(new Tile(player, player.getPlayerBase(), null));
     }
     return targets;
@@ -167,10 +170,12 @@ public class Board {
     List<Tile> targets = this.tiles.stream()
       .filter(t -> bordering.contains(t.getPosition()) &&
         t.getOwner().equals(player) &&
+        t.getSummon().isAlive() &&
         clazz.isInstance(t.getSummon()))
       .collect(Collectors.toList());
-    if ((position.getRow() == 0 && player.equals(this.game.getTopPlayer())) ||
-        (position.getRow() == this.getRows() - 1 && player.equals(this.game.getBottomPlayer())) ) {
+    if (clazz.isInstance(player.getPlayerBase()) && (
+        (position.getRow() == 0 && player.equals(this.game.getTopPlayer())) ||
+        (position.getRow() == this.getRows() - 1 && player.equals(this.game.getBottomPlayer())) ) ) {
       targets.add(new Tile(player, player.getPlayerBase(), null));
     }
     return targets;
