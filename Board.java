@@ -164,32 +164,77 @@ public class Board {
         }
       }
     }
+    this.setNewFrontLines();
   }
 
   public void summon(Summon card, Player player, Position position, boolean checkFrontLine) {
-    if (this.isTileEmptyAt(position)) { //&& player.is_behind_front_line(position):
+    if (this.isTileEmptyAt(position) && (!checkFrontLine || this.isBehindFrontLine(player, position))) {
       this.tiles.add(new Tile(player, card, position));
+    }
+  }
+
+  public void setNewFrontLines() {
+    game.getTopPlayer().setFrontLine(this.calcNewFrontLine(game.getTopPlayer()));
+    game.getBottomPlayer().setFrontLine(this.calcNewFrontLine(game.getBottomPlayer()));
+  }
+
+  public int calcNewFrontLine(Player player) {
+    int frontLine = player.getFrontLine();
+    List<Tile> tiles = this.tiles.stream()
+      .filter(t -> t.getOwner().equals(player) &&
+        t.getSummon().isAlive())
+      .collect(Collectors.toList());
+    if (player.equals(game.getTopPlayer())) {
+      if (player.equals(game.getActivePlayer())) {
+        int calcLine = tiles.stream().map(t -> t.getPosition().getRow()).mapToInt(i -> i + 1).max().orElse(1);
+        return Math.min(this.getRows() - 1, Math.max(calcLine, frontLine));
+      } else {
+        int calcLine = tiles.stream().map(t -> t.getPosition().getRow()).mapToInt(i -> i + 1).max().orElse(1);
+        return Math.min(this.getRows() - 1, calcLine);
+      }
+    } else {
+      if (player.equals(game.getActivePlayer())) {
+        int calcLine = tiles.stream().map(t -> t.getPosition().getRow()).mapToInt(i -> i).min().orElse(this.getRows() - 1);
+        return Math.max(1, Math.min(calcLine, frontLine));
+      } else {
+        int calcLine = tiles.stream().map(t -> t.getPosition().getRow()).mapToInt(i -> i).min().orElse(this.getRows() - 1);
+        return Math.max(1, calcLine);
+      }
+    }
+  }
+
+  public boolean isBehindFrontLine(Player player, Position position) {
+    int frontLine = player.getFrontLine();
+    if (player.equals(game.getTopPlayer())) {
+      return position.getRow() < frontLine;
+    } else {
+      return position.getRow() >= frontLine;
     }
   }
 
   public String toString() {
     StringBuilder result = new StringBuilder();
-    result.append("  ");
+    int topFrontLine = game.getTopPlayer().getFrontLine();
+    int bottomFrontLine = game.getBottomPlayer().getFrontLine();
+    result.append("    ");
     for (int col = 0; col < this.cols; col++) {
       result.append(String.format(" %s  ", (char)('A' + col)));
     }
     result.append(String.format("%n"));
     for (int row = 0; row < this.rows; row++) {
-      result.append(String.format("%d ", row));
+      result.append(String.format("%d %s", row, (topFrontLine == row + 1) ? "v " : "  "));
       for (int col = 0; col < this.cols; col++) {
         Position position = new Position(row, col);
         result.append((this.isTileEmptyAt(position)) ? "   " : this.getTileAt(position).toString());
         if (col < this.cols - 1) { result.append("|"); }
       }
+      if (row == bottomFrontLine) {
+        result.append(" ^");
+      }
       if (row < this.rows - 1) {
         result.append(String.format("%n"));
-        result.append("  ");
-        result.append(Stream.generate(() -> "-").limit(this.cols*4).collect(Collectors.joining("")));
+        result.append((topFrontLine == row + 1) ? "  --" : "    ");
+        result.append(Stream.generate(() -> "-").limit(this.cols*4 - 1 + ((row + 1 == bottomFrontLine) ? 2 : 0)).collect(Collectors.joining("")));
         result.append(String.format("%n"));
       }
     }

@@ -13,13 +13,15 @@ public class Game {
       bottomPlayerFaction,
       false,
       bottomPlayerBaseStrength,
-      bottomPlayerGoesFirst
+      bottomPlayerGoesFirst,
+      this.board.getRows() - 1
     );
     this.topPlayer = new Player(
       topPlayerFaction,
       true,
       topPlayerBaseStrength,
-      !bottomPlayerGoesFirst
+      !bottomPlayerGoesFirst,
+      1
     );
     this.turnCounter = 1;
     this.bottomPlayerGoesFirst = bottomPlayerGoesFirst;

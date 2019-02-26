@@ -36,6 +36,7 @@ class Unit extends Summon implements Comparable<Card> {
       currentPosition = nextAttackPosition;
       remainingMovement -= 1;
     }
+    game.getBoard().setNewFrontLines();
   }
 
   public void move(Game game, Player player, Position position, Position newPosition) {

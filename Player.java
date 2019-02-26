@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Set;
 
 public class Player {
-  int currentMana, level;
+  int currentMana, level, frontLine;
   boolean isOpponent, goesFirst;
   Faction faction;
   String name;
   PlayerBase playerBase;
   Deck deck;
   Hand hand;
-  public Player(Faction faction, boolean isOpponent, int baseStrength, boolean goesFirst) throws Exception {
+  public Player(Faction faction, boolean isOpponent, int baseStrength, boolean goesFirst, int frontLine) throws Exception {
     if (faction != Faction.NEUTRAL) {
       this.goesFirst = goesFirst;
       this.currentMana = (goesFirst) ? 3 : 4;
@@ -25,8 +25,9 @@ public class Player {
       this.name = (isOpponent) ? "Opp" : "You";
       this.playerBase = new PlayerBase(baseStrength);
       this.hand = new Hand(4);
+      this.frontLine = frontLine;
     } else {
-      throw new Exception("Invalid Faction supplied to player constructor");
+      throw new Exception("Invalid Faction supplied to Player constructor");
     }
   }
   public void setDeck(Deck deck) {
@@ -51,6 +52,8 @@ public class Player {
   public Faction getFaction() {return this.faction;}
   public String getName() {return this.name;}
   public PlayerBase getPlayerBase() {return this.playerBase;}
+  public int getFrontLine() {return this.frontLine;}
+  public void setFrontLine(int frontLine) {this.frontLine = frontLine;}
   public void spendMana(int mana) {this.currentMana -= mana;}
   public void addMana(int mana) {this.currentMana += mana;}
   public void fillMana(int mana) {this.currentMana = mana;}

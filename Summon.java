@@ -19,9 +19,10 @@ public class Summon extends Card implements Comparable<Card> {
   }
 
   public boolean canPlay(Game game, Player player, Position position) {
+    Board board = game.getBoard();
     if (super.canPlay(game, player, position) &&
-        game.getBoard().isTileEmptyAt(position) ) { //&&
-        //player.is_behind_front_line(position)) {
+        board.isTileEmptyAt(position) &&
+        board.isBehindFrontLine(player, position)) {
       return true;
     } else {
       return false;
