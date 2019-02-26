@@ -55,4 +55,8 @@ public class HeraldsHymn extends Spell {
       }
     }
   }
+
+  public List<Position> getPossiblePlayPositions(Game game, Player player) {
+    return game.getBoard().getOnBoardPlayerTypePositions(player, Unit.class);
+  }
 }

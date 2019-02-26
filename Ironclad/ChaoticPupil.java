@@ -34,18 +34,12 @@ class ChaoticPupil extends Rodent {
     super.onDeath(game, player, position);
     // deal damage spread randomly among all surrounding enemies
     Board board = game.getBoard();
-    List<Tile> targets = board.getSurroundingTargets(position).stream()
-      .filter(t -> !t.getOwner().equals(player) &&
-        t.getSummon().isAlive())
-      .collect(Collectors.toList());
+    List<Tile> targets = board.getSurroundingPlayerTypeTargets(game.getOpponent(player), position, Summon.class);
     int numShots = calcDamage(this.getLevel());
     while (numShots > 0 && targets.size() > 0) {
       Tile choice = Choice.chooseOne(targets);
       choice.getSummon().takeDamage(game, choice.getOwner(), choice.getPosition(), 1);
-      targets = board.getSurroundingTargets(position).stream()
-        .filter(t -> !t.getOwner().equals(player) &&
-          t.getSummon().isAlive())
-        .collect(Collectors.toList());
+      targets = board.getSurroundingPlayerTypeTargets(game.getOpponent(player), position, Summon.class);
       numShots--;
     }
   }

@@ -1,6 +1,7 @@
 package com.stormboundanalyzer;
 
 import java.util.Comparator;
+import java.util.List;
 
 public class Card implements Comparable<Card> {
   String name, text;
@@ -50,6 +51,10 @@ public class Card implements Comparable<Card> {
   public int getCost() { return this.cost; }
   public Faction getFaction() { return this.faction; }
   public Rarity getRarity() { return this.rarity; }
+
+  public List<Position> getPossiblePlayPositions(Game game, Player player) {
+    return game.getBoard().getAllPositions();
+  }
 
   @Override
   public int compareTo(Card c) {

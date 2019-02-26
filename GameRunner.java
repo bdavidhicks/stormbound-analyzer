@@ -73,7 +73,8 @@ public class GameRunner {
         if (action == 'p') {
           if (game.getActivePlayer().getHand().getCards().size() > 0) {
             Card cardToPlay = gr.chooseFromList(gr.sc, "Pick a card to play: ", game.getActivePlayer().getHand().getCards());
-            Position locationToPlay = gr.chooseLocation(gr.sc, "Pick a location to play: a0 a1 ... d4 ");
+            Position locationToPlay = gr.chooseLocation(gr.sc, String.format("Pick a location to play: %s",
+              String.join(", ", cardToPlay.getPossiblePlayPositions(game, game.getActivePlayer()).stream().map(Position::toHumanString).collect(Collectors.toList()))));
             gr.playCard(game, game.getActivePlayer(), locationToPlay, cardToPlay);
           } else {
             System.out.println("No cards left to play...");
@@ -108,9 +109,7 @@ public class GameRunner {
     if (card.canPlay(game, player, position)) {
       System.out.println(String.format("%s playing level %d %s at %s", player.getName(), card.getLevel(), card.getName(), position.toString()));
       card.play(game, player, position);
-      if (card instanceof Summon) {
-        card.afterPlay(game, player, position);
-      }
+      card.afterPlay(game, player, position);
     } else {
       System.out.println(String.format("%s unable to play level %d %s at %s", player.getName(), card.getLevel(), card.getName(), position.toString()));
     }

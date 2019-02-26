@@ -35,17 +35,11 @@ class Felflares extends Frostling {
       super.play(game, player, position);
       // deal damagage to a random surrounding enemy
       Board board = game.getBoard();
-      List<Position> surrounding = board.getSurroundingList(position);
-      List<Position> targets = surrounding.stream()
-        .filter(p -> !board.isTileEmptyAt(p) &&
-          board.getTileAt(p).getOwner() != player &&
-          board.getTileAt(p).getSummon() instanceof Summon &&
-          !(board.getTileAt(p).getSummon() instanceof PlayerBase) &&
-          board.getTileAt(p).getSummon().getCurrentStrength() > 0)
+      List<Tile> targets = board.getSurroundingPlayerTypeTargets(game.getOpponent(player), position, Summon.class).stream()
+        .filter(t -> !(t.getSummon() instanceof PlayerBase))
         .collect(Collectors.toList());
       if (targets.size() > 0) {
-        Position choice = Choice.chooseOne(targets);
-        Tile tile = board.getTileAt(choice);
+        Tile tile = Choice.chooseOne(targets);
         tile.getSummon().takeDamage(game, tile.getOwner(), tile.getPosition(), calcDamage(this.getLevel()));
       }
     }

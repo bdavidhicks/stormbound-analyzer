@@ -38,9 +38,7 @@ class FiniteLoopers extends Construct {
     super.onDeath(game, player, position);
     // spawn a Construct on a random bordering tile
     Board board = game.getBoard();
-    List<Position> targets = board.getBorderingList(position).stream()
-      .filter(p -> board.isTileEmptyAt(p))
-      .collect(Collectors.toList());
+    List<Position> targets = board.getBorderingEmptyPositions(position);
     if (targets.size() > 0) {
       Position choice = Choice.chooseOne(targets);
       try {

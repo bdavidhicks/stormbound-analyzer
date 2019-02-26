@@ -1,5 +1,7 @@
 package com.stormboundanalyzer;
 
+import java.util.List;
+
 public class Execution extends Spell {
   public Execution(String name, String text, int level, Faction faction, Rarity rarity, int cost) throws Exception {
     super(name, text, level, faction, rarity, cost);
@@ -46,5 +48,9 @@ public class Execution extends Spell {
       Summon summon = tile.getSummon();
       summon.takeDamage(game, tile.getOwner(), tile.getPosition(), calcDamage(this.getLevel()));
     }
+  }
+
+  public List<Position> getPossiblePlayPositions(Game game, Player player) {
+    return game.getBoard().getOnBoardPlayerPositions(game.getOpponent(player));
   }
 }

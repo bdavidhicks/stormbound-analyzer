@@ -34,14 +34,7 @@ class ForgottenSouls extends Undead {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
       Board board = game.getBoard();
-      List<Position> bordering = board.getBorderingList(position);
-      List<Tile> targets = bordering.stream()
-        .filter(b -> !board.isTileEmptyAt(b) &&
-          board.getTileAt(b).getOwner() == player &&
-          board.getTileAt(b).getSummon() instanceof Unit &&
-          board.getTileAt(b).getSummon().getCurrentStrength() > 0)
-        .map(b -> board.getTileAt(b))
-        .collect(Collectors.toList());
+      List<Tile> targets = board.getBorderingPlayerTypeTargets(player, position, Unit.class);
       if (targets.size() > 0) {
         Tile choice = Choice.chooseOne(targets);
         Position positionInFront = board.getPositionInFront(player, choice.getPosition());

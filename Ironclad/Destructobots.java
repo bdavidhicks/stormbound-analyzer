@@ -35,16 +35,14 @@ class Destructobots extends Construct {
       super.play(game, player, position);
       // deal 1 damage to random friendly unit
       Board board = game.getBoard();
-      List<Tile> targets = board.getAllTargets().stream()
-        .filter(t -> t.getOwner().equals(player) &&
-          t.getSummon() instanceof Unit &&
-          t.getSummon().isAlive() &&
-          !t.getSummon().equals(this))
+      List<Position> targets = board.getOnBoardPlayerTypePositions(player, Unit.class).stream()
+        .filter(p -> !board.getTileAt(p).getSummon().equals(this))
         .collect(Collectors.toList());
       if (targets.size() > 0) {
-        Tile choice = Choice.chooseOne(targets);
-        Summon summon = choice.getSummon();
-        summon.takeDamage(game, choice.getOwner(), choice.getPosition(), 1);
+        Position choice = Choice.chooseOne(targets);
+        Tile tile = board.getTileAt(choice);
+        Summon summon = tile.getSummon();
+        summon.takeDamage(game, tile.getOwner(), choice, 1);
       }
     }
   }

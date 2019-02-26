@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.lang.Class;
 
 public class Board {
 
@@ -39,6 +40,22 @@ public class Board {
     this.tiles.remove(tile);
   }
 
+  public List<Position> getAnyPositionAsList() {
+    List<Position> result =  new ArrayList<Position>();
+    result.add(new Position(0,0));
+    return result;
+  }
+
+  public List<Position> getAllPositions() {
+    List<Position> positions = new ArrayList<Position>();
+    for (int row = 0; row < this.getRows(); row++) {
+      for (int col = 0; col < this.getCols(); col++) {
+        positions.add(new Position(row, col));
+      }
+    }
+    return positions;
+  }
+
   public Position getPositionInFront(Player player, Position position) {
     if (player.isOpponent() && position.getRow() < this.rows - 1) {
       return new Position(position.getRow() + 1, position.getCol());
@@ -62,7 +79,7 @@ public class Board {
     return null;
   }
 
-  public List<Position> getBorderingList(Position position) {
+  public List<Position> getBorderingPositions(Position position) {
     List<Position> result = new ArrayList<Position>();
     if (position.getRow() - 1 >= 0) { result.add(new Position(position.getRow() - 1, position.getCol())); }
     if (position.getRow() + 1 < this.getRows()) { result.add(new Position(position.getRow() + 1, position.getCol())); }
@@ -71,7 +88,13 @@ public class Board {
     return result;
   }
 
-  public List<Position> getSurroundingList(Position position) {
+  public List<Position> getBorderingEmptyPositions(Position position) {
+    return this.getBorderingPositions(position).stream()
+      .filter(p -> this.isTileEmptyAt(p))
+      .collect(Collectors.toList());
+  }
+
+  public List<Position> getSurroundingPositions(Position position) {
     List<Position> surrounding = new ArrayList<Position>();
     for (int row = -1; row <= 1; row++) {
       for (int col = -1; col <= 1; col++) {
@@ -87,35 +110,68 @@ public class Board {
     return surrounding;
   }
 
-  public List<Tile> getAllTargets() {
-    List<Tile> targets = new ArrayList<Tile>(this.tiles);
-    targets.add(new Tile(this.game.getTopPlayer(), this.game.getTopPlayer().getPlayerBase(), null));
-    targets.add(new Tile(this.game.getBottomPlayer(), this.game.getBottomPlayer().getPlayerBase(), null));
+  public List<Position> getSurroundingEmptyPositions(Position position) {
+    return this.getSurroundingPositions(position).stream()
+      .filter(p -> this.isTileEmptyAt(p))
+      .collect(Collectors.toList());
+  }
+
+  public List<Position> getOpenBehindLinePositions(Player player) {
+    return this.getAllPositions().stream()
+      .filter(p -> this.isTileEmptyAt(p) &&
+        this.isBehindFrontLine(player, p))
+        .collect(Collectors.toList());
+  }
+
+  public List<Tile> getPlayerAllTargets(Player player) {
+    List<Tile> targets = this.tiles.stream()
+      .filter(t -> t.getOwner().equals(player))
+      .collect(Collectors.toList());
+    targets.add(new Tile(player, player.getPlayerBase(), null));
     return targets;
   }
 
-  public List<Tile> getSurroundingTargets(Position position) {
-    List<Position> surrounding = this.getSurroundingList(position);
-    List<Tile> targets = this.tiles.stream()
-      .filter(t -> surrounding.contains(t.getPosition()))
+  public List<Position> getOnBoardPlayerPositions(Player player) {
+    return this.tiles.stream()
+      .filter(t -> t.getOwner().equals(player) &&
+        t.getSummon().isAlive())
+      .map(Tile::getPosition)
       .collect(Collectors.toList());
-    if (position.getRow() == 0) {
-      targets.add(new Tile(this.game.getTopPlayer(), this.game.getTopPlayer().getPlayerBase(), null));
-    } else if (position.getRow() == this.getRows() - 1) {
-      targets.add(new Tile(this.game.getBottomPlayer(), this.game.getBottomPlayer().getPlayerBase(), null));
+  }
+
+  public List<Position> getOnBoardPlayerTypePositions(Player player, Class<?> clazz) {
+    return this.tiles.stream()
+      .filter(t -> t.getOwner().equals(player) &&
+        t.getSummon().isAlive() &&
+        clazz.isInstance(t.getSummon()))
+      .map(Tile::getPosition)
+      .collect(Collectors.toList());
+  }
+
+  public List<Tile> getSurroundingPlayerTypeTargets(Player player, Position position, Class<?> clazz) {
+    List<Position> surrounding = this.getSurroundingPositions(position);
+    List<Tile> targets = this.tiles.stream()
+      .filter(t -> surrounding.contains(t.getPosition()) &&
+        t.getOwner().equals(player) &&
+        clazz.isInstance(t.getSummon()))
+      .collect(Collectors.toList());
+    if ((position.getRow() == 0 && player.equals(this.game.getTopPlayer())) ||
+        (position.getRow() == this.getRows() - 1 && player.equals(this.game.getBottomPlayer())) ) {
+      targets.add(new Tile(player, player.getPlayerBase(), null));
     }
     return targets;
   }
 
-  public List<Tile> getBorderingTargets(Position position) {
-    List<Position> bordering = this.getBorderingList(position);
+  public List<Tile> getBorderingPlayerTypeTargets(Player player, Position position, Class<?> clazz) {
+    List<Position> bordering = this.getBorderingPositions(position);
     List<Tile> targets = this.tiles.stream()
-      .filter(t -> bordering.contains(t.getPosition()))
+      .filter(t -> bordering.contains(t.getPosition()) &&
+        t.getOwner().equals(player) &&
+        clazz.isInstance(t.getSummon()))
       .collect(Collectors.toList());
-    if (position.getRow() == 0) {
-      targets.add(new Tile(this.game.getTopPlayer(), this.game.getTopPlayer().getPlayerBase(), null));
-    } else if (position.getRow() == this.getRows() - 1) {
-      targets.add(new Tile(this.game.getBottomPlayer(), this.game.getBottomPlayer().getPlayerBase(), null));
+    if ((position.getRow() == 0 && player.equals(this.game.getTopPlayer())) ||
+        (position.getRow() == this.getRows() - 1 && player.equals(this.game.getBottomPlayer())) ) {
+      targets.add(new Tile(player, player.getPlayerBase(), null));
     }
     return targets;
   }

@@ -22,6 +22,11 @@ public class Spell extends Card implements Comparable<Card> {
     }
   }
 
+  public void afterPlay(Game game, Player player, Position position) {
+    super.afterPlay(game, player, position);
+    game.getBoard().setNewFrontLines();
+  }
+
   @Override
   public int compareTo(Card c) {
     return super.compareTo(c);

@@ -30,17 +30,10 @@ class GreenPrototypes extends Construct {
     super.onDeath(game, player, position);
     // give a random boarding ENEMY unit strength equal to level
     Board board = game.getBoard();
-    List<Position> bordering = board.getBorderingList(position);
-    List<Summon> targets = bordering.stream()
-      .filter(p -> !board.isTileEmptyAt(p) &&
-        board.getTileAt(p).getOwner() != player &&
-        board.getTileAt(p).getSummon() instanceof Unit &&
-        board.getTileAt(p).getSummon().getCurrentStrength() > 0)
-      .map(p -> board.getTileAt(p).getSummon())
-      .collect(Collectors.toList());
+    List<Tile> targets = board.getBorderingPlayerTypeTargets(game.getOpponent(player), position, Unit.class);
     if (targets.size() > 0) {
-      Summon choice = Choice.chooseOne(targets);
-      choice.addStrength(this.getLevel());
+      Tile tile = Choice.chooseOne(targets);
+      tile.getSummon().addStrength(this.getLevel());
     }
   }
 }

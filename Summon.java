@@ -1,6 +1,7 @@
 package com.stormboundanalyzer;
 
 import java.util.Comparator;
+import java.util.List;
 
 public class Summon extends Card implements Comparable<Card> {
   int startingStrength, currentStrength;
@@ -55,6 +56,10 @@ public class Summon extends Card implements Comparable<Card> {
   public void onTurnBegin(Game game, Player player, Position position) { }
   public void onDeath(Game game, Player player, Position position) throws RuntimeException {
     game.getBoard().remove(game.getBoard().getTileAt(position));
+  }
+
+  public List<Position> getPossiblePlayPositions(Game game, Player player) {
+    return game.getBoard().getOpenBehindLinePositions(player);
   }
 
   @Override

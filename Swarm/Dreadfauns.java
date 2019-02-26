@@ -38,10 +38,7 @@ class Dreadfauns extends Satyr {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
       Board board = game.getBoard();
-      List<Position> bordering = board.getBorderingList(position);
-      List<Position> targets = bordering.stream()
-        .filter(b -> board.isTileEmptyAt(b))
-        .collect(Collectors.toList());
+      List<Position> targets = board.getBorderingEmptyPositions(position);
       List<Position> choices = Choice.chooseMany(targets, 2);
       for (Position spawnPosition : choices) {
         if (spawnPosition != null && board.isTileEmptyAt(spawnPosition)) {

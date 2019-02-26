@@ -1,5 +1,7 @@
 package com.stormboundanalyzer;
 
+import java.util.List;
+
 public class PotionOfGrowth extends Spell {
   public PotionOfGrowth(String name, String text, int level, Faction faction, Rarity rarity, int cost) throws Exception {
     super(name, text, level, faction, rarity, cost);
@@ -39,5 +41,9 @@ public class PotionOfGrowth extends Spell {
       Summon summon = game.getBoard().getTileAt(position).getSummon();
       summon.addStrength(calcGainStrength(this.getLevel()));
     }
+  }
+
+  public List<Position> getPossiblePlayPositions(Game game, Player player) {
+    return game.getBoard().getOnBoardPlayerTypePositions(player, Unit.class);
   }
 }

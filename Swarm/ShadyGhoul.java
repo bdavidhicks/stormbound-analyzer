@@ -33,10 +33,7 @@ class ShadyGhoul extends Undead {
   public void onDeath(Game game, Player player, Position position) {
     super.onDeath(game, player, position);
     Board board = game.getBoard();
-    List<Position> bordering = board.getBorderingList(position);
-    List<Position> targets = bordering.stream()
-      .filter(b -> board.isTileEmptyAt(b))
-      .collect(Collectors.toList());
+    List<Position> targets = board.getBorderingEmptyPositions(position);
     if (targets.size() > 0) {
       Position choice = Choice.chooseOne(targets);
       try {

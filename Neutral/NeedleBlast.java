@@ -34,10 +34,7 @@ public class NeedleBlast extends Spell {
   public void play(Game game, Player player, Position position) {
     if (this.canPlay(game, player, position)) {
       super.play(game, player, position);
-      List<Tile> targets = game.getBoard().getAllTargets().stream()
-        .filter(t -> t.getOwner() != player &&
-          t.getSummon().isAlive())
-        .collect(Collectors.toList());
+      List<Tile> targets = game.getBoard().getPlayerAllTargets(game.getOpponent(player));
       if (targets.size() > 0) {
         List<Tile> choices = Choice.chooseMany(targets, calcNumTargets(this.getLevel()));
         for (Tile tile : choices) {
@@ -46,5 +43,9 @@ public class NeedleBlast extends Spell {
         }
       }
     }
+  }
+
+  public List<Position> getPossiblePlayPositions(Game game, Player player) {
+    return game.getBoard().getAnyPositionAsList();
   }
 }
